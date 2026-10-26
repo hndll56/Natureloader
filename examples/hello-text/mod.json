@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "id": "hello-text",
+  "name": "Halo dari NatureLoader",
+  "version": "1.0.0",
+  "game": "SLUS_011.15",
+  "texts": {
+    "messages.promptYesNo": "Ya, pakai mod ini!\nTidak dulu.\n\nTeks ini berasal dari mod terpisah. ROM asli tetap sama."
+  }
+}

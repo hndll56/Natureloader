@@ -1,0 +1,1778 @@
+{
+  "format": "btnx-text-bank-v1",
+  "baseAddress": "0x8005175C",
+  "byteSize": 13406,
+  "originalSha256": "e4e0c6a6346e7f8d9d61382d72b0198ef4b24470e0ed74094c907f8e8075a4a1",
+  "entries": [
+    {
+      "name": "messages.promptYesNo",
+      "offset": 0,
+      "capacity": 9
+    },
+    {
+      "name": "messages.ordinalSt",
+      "offset": 18,
+      "capacity": 3
+    },
+    {
+      "name": "messages.ordinalNd",
+      "offset": 24,
+      "capacity": 3
+    },
+    {
+      "name": "messages.ordinalRd",
+      "offset": 30,
+      "capacity": 3
+    },
+    {
+      "name": "messages.ordinalTh",
+      "offset": 36,
+      "capacity": 3
+    },
+    {
+      "name": "messages.littered",
+      "offset": 42,
+      "capacity": 9
+    },
+    {
+      "name": "messages.razzedVillager",
+      "offset": 60,
+      "capacity": 16
+    },
+    {
+      "name": "messages.didntFeedAnimal",
+      "offset": 92,
+      "capacity": 18
+    },
+    {
+      "name": "messages.letAnimalDie",
+      "offset": 128,
+      "capacity": 15
+    },
+    {
+      "name": "messages.wasMeanToAnimal",
+      "offset": 158,
+      "capacity": 19
+    },
+    {
+      "name": "messages.overslept",
+      "offset": 196,
+      "capacity": 10
+    },
+    {
+      "name": "messages.botheredVillager",
+      "offset": 216,
+      "capacity": 18
+    },
+    {
+      "name": "messages.stalkedVillager",
+      "offset": 252,
+      "capacity": 17
+    },
+    {
+      "name": "messages.leftDiaryBlank",
+      "offset": 286,
+      "capacity": 17
+    },
+    {
+      "name": "messages.covetOthersGirl",
+      "offset": 320,
+      "capacity": 18
+    },
+    {
+      "name": "messages.shoplifted",
+      "offset": 356,
+      "capacity": 11
+    },
+    {
+      "name": "messages.doubtedOther",
+      "offset": 378,
+      "capacity": 14
+    },
+    {
+      "name": "messages.hateSomeone",
+      "offset": 406,
+      "capacity": 13
+    },
+    {
+      "name": "messages.sorryWrongRoom",
+      "offset": 432,
+      "capacity": 18
+    },
+    {
+      "name": "messages.loveTheGoddess",
+      "offset": 468,
+      "capacity": 17
+    },
+    {
+      "name": "messages.envyOthersHome",
+      "offset": 502,
+      "capacity": 17
+    },
+    {
+      "name": "messages.refusedInvitation",
+      "offset": 536,
+      "capacity": 19
+    },
+    {
+      "name": "messages.hateWork",
+      "offset": 574,
+      "capacity": 10
+    },
+    {
+      "name": "messages.wantToFishKappa",
+      "offset": 594,
+      "capacity": 19
+    },
+    {
+      "name": "messages.resetMinigame",
+      "offset": 632,
+      "capacity": 15
+    },
+    {
+      "name": "messages.lentThisGame",
+      "offset": 662,
+      "capacity": 15
+    },
+    {
+      "name": "messages.namedAnimalFunny",
+      "offset": 692,
+      "capacity": 19
+    },
+    {
+      "name": "messages.haveManyDiaries",
+      "offset": 730,
+      "capacity": 18
+    },
+    {
+      "name": "messages.drankTooMuch",
+      "offset": 766,
+      "capacity": 15
+    },
+    {
+      "name": "messages.droppedCrops",
+      "offset": 796,
+      "capacity": 14
+    },
+    {
+      "name": "messages.yourName",
+      "offset": 824,
+      "capacity": 11
+    },
+    {
+      "name": "messages.yourBirthday",
+      "offset": 846,
+      "capacity": 15
+    },
+    {
+      "name": "messages.farmsName",
+      "offset": 876,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dogsName",
+      "offset": 900,
+      "capacity": 11
+    },
+    {
+      "name": "messages.newGameSummary",
+      "offset": 922,
+      "capacity": 67
+    },
+    {
+      "name": "messages.swapEquip",
+      "offset": 1056,
+      "capacity": 6
+    },
+    {
+      "name": "messages.swapRucksack",
+      "offset": 1068,
+      "capacity": 9
+    },
+    {
+      "name": "messages.year",
+      "offset": 1086,
+      "capacity": 5
+    },
+    {
+      "name": "messages.storageEquip",
+      "offset": 1096,
+      "capacity": 6
+    },
+    {
+      "name": "messages.storageRucksack",
+      "offset": 1108,
+      "capacity": 9
+    },
+    {
+      "name": "messages.storageToolbox",
+      "offset": 1126,
+      "capacity": 8
+    },
+    {
+      "name": "messages.storageIcebox",
+      "offset": 1142,
+      "capacity": 7
+    },
+    {
+      "name": "messages.storageCabinet",
+      "offset": 1156,
+      "capacity": 8
+    },
+    {
+      "name": "messages.slash",
+      "offset": 1172,
+      "capacity": 2
+    },
+    {
+      "name": "messages.odds",
+      "offset": 1176,
+      "capacity": 5
+    },
+    {
+      "name": "messages.tickets",
+      "offset": 1186,
+      "capacity": 8
+    },
+    {
+      "name": "messages.raceBets",
+      "offset": 1202,
+      "capacity": 12
+    },
+    {
+      "name": "messages.ok",
+      "offset": 1226,
+      "capacity": 3
+    },
+    {
+      "name": "messages.revisionCodeError",
+      "offset": 1232,
+      "capacity": 20
+    },
+    {
+      "name": "messages.noDiary",
+      "offset": 1272,
+      "capacity": 9
+    },
+    {
+      "name": "messages.notEnoughFreeSpace",
+      "offset": 1290,
+      "capacity": 22
+    },
+    {
+      "name": "messages.noFreeSpace",
+      "offset": 1334,
+      "capacity": 14
+    },
+    {
+      "name": "messages.giving",
+      "offset": 1362,
+      "capacity": 7
+    },
+    {
+      "name": "messages.getting",
+      "offset": 1376,
+      "capacity": 8
+    },
+    {
+      "name": "messages.selectHarvestSprites",
+      "offset": 1392,
+      "capacity": 23
+    },
+    {
+      "name": "messages.saveDaysLeft",
+      "offset": 1438,
+      "capacity": 10
+    },
+    {
+      "name": "messages.saveFree",
+      "offset": 1458,
+      "capacity": 5
+    },
+    {
+      "name": "messages.memoryCardSlots",
+      "offset": 1468,
+      "capacity": 38
+    },
+    {
+      "name": "messages.returnCancel",
+      "offset": 1544,
+      "capacity": 14
+    },
+    {
+      "name": "messages.saveYesNo",
+      "offset": 1572,
+      "capacity": 7
+    },
+    {
+      "name": "messages.diaryNumber",
+      "offset": 1586,
+      "capacity": 8
+    },
+    {
+      "name": "messages.diaryDate",
+      "offset": 1602,
+      "capacity": 14
+    },
+    {
+      "name": "messages.diaryFarmName",
+      "offset": 1630,
+      "capacity": 9
+    },
+    {
+      "name": "messages.abortingSaveIsThatOk",
+      "offset": 1648,
+      "capacity": 27
+    },
+    {
+      "name": "messages.abortingLoadIsThatOk",
+      "offset": 1702,
+      "capacity": 27
+    },
+    {
+      "name": "messages.stoppingPlayWithHarvestSpritesOk",
+      "offset": 1756,
+      "capacity": 40
+    },
+    {
+      "name": "messages.abortingExchangeIsThatOk",
+      "offset": 1836,
+      "capacity": 31
+    },
+    {
+      "name": "messages.tradingLivestockIsThatOk",
+      "offset": 1898,
+      "capacity": 31
+    },
+    {
+      "name": "messages.okToCancel",
+      "offset": 1960,
+      "capacity": 14
+    },
+    {
+      "name": "messages.wantToFormatPocketstation",
+      "offset": 1988,
+      "capacity": 30
+    },
+    {
+      "name": "messages.okToOverwriteHarvestSpritesData",
+      "offset": 2048,
+      "capacity": 38
+    },
+    {
+      "name": "messages.wantToFormat",
+      "offset": 2124,
+      "capacity": 16
+    },
+    {
+      "name": "messages.loadThisDiary",
+      "offset": 2156,
+      "capacity": 17
+    },
+    {
+      "name": "messages.okToOverwriteThisDiary",
+      "offset": 2190,
+      "capacity": 28
+    },
+    {
+      "name": "messages.exchangeHasEnded",
+      "offset": 2246,
+      "capacity": 20
+    },
+    {
+      "name": "messages.cannotExchangeWithDiaryFromSame",
+      "offset": 2286,
+      "capacity": 43
+    },
+    {
+      "name": "messages.selectUpTo5AnimalsCant",
+      "offset": 2372,
+      "capacity": 88
+    },
+    {
+      "name": "messages.noAnimalSelected",
+      "offset": 2548,
+      "capacity": 20
+    },
+    {
+      "name": "messages.thatPutsTooManyHensInto",
+      "offset": 2588,
+      "capacity": 63
+    },
+    {
+      "name": "messages.thatGivesPartnerTooManyHens",
+      "offset": 2714,
+      "capacity": 69
+    },
+    {
+      "name": "messages.thatPutsTooManyCowsSheep",
+      "offset": 2852,
+      "capacity": 69
+    },
+    {
+      "name": "messages.thatGivesPartnerTooManyCows",
+      "offset": 2990,
+      "capacity": 81
+    },
+    {
+      "name": "messages.thereIsNoDiaryHere",
+      "offset": 3152,
+      "capacity": 24
+    },
+    {
+      "name": "messages.loadHasEnded",
+      "offset": 3200,
+      "capacity": 16
+    },
+    {
+      "name": "messages.deleteHasFailed",
+      "offset": 3232,
+      "capacity": 19
+    },
+    {
+      "name": "messages.loadFailedMemoryCardSlotPocketstation",
+      "offset": 3270,
+      "capacity": 66
+    },
+    {
+      "name": "messages.deletingDataOfMemoryCardSlot",
+      "offset": 3402,
+      "capacity": 66
+    },
+    {
+      "name": "messages.memoryCardSlotPocketstationIsBroken",
+      "offset": 3534,
+      "capacity": 44
+    },
+    {
+      "name": "messages.pocketstationLoading",
+      "offset": 3622,
+      "capacity": 62
+    },
+    {
+      "name": "messages.uponReturnToFarmHarvestSprites",
+      "offset": 3746,
+      "capacity": 82
+    },
+    {
+      "name": "messages.theDataInMemoryCardSlot",
+      "offset": 3910,
+      "capacity": 68
+    },
+    {
+      "name": "messages.noLoadableDataInThePocketstation",
+      "offset": 4046,
+      "capacity": 60
+    },
+    {
+      "name": "messages.pocketstationSaving",
+      "offset": 4166,
+      "capacity": 63
+    },
+    {
+      "name": "messages.cantSaveNotEnoughFreeSpace",
+      "offset": 4292,
+      "capacity": 73
+    },
+    {
+      "name": "messages.cantSaveNoFreeSpaceIn",
+      "offset": 4438,
+      "capacity": 65
+    },
+    {
+      "name": "messages.formattingPocketstationInMemoryCardSlot",
+      "offset": 4568,
+      "capacity": 63
+    },
+    {
+      "name": "messages.pocketstationInMemoryCardSlotIs",
+      "offset": 4694,
+      "capacity": 54
+    },
+    {
+      "name": "messages.harvestSpritesHereWillOverwriteIts",
+      "offset": 4802,
+      "capacity": 80
+    },
+    {
+      "name": "messages.pocketstationNoneInSlot",
+      "offset": 4962,
+      "capacity": 50
+    },
+    {
+      "name": "messages.pocketstationDataSaved",
+      "offset": 5062,
+      "capacity": 21
+    },
+    {
+      "name": "messages.pocketstationHasBeenDisconnectedFromMemory",
+      "offset": 5104,
+      "capacity": 61
+    },
+    {
+      "name": "messages.pocketstationNoneInEitherSlot",
+      "offset": 5226,
+      "capacity": 65
+    },
+    {
+      "name": "messages.checkingThePocketstation",
+      "offset": 5356,
+      "capacity": 28
+    },
+    {
+      "name": "messages.seeYouLater",
+      "offset": 5412,
+      "capacity": 16
+    },
+    {
+      "name": "messages.hiImBack",
+      "offset": 5444,
+      "capacity": 14
+    },
+    {
+      "name": "messages.thePocketstationHarvestSpritesNeverCame",
+      "offset": 5472,
+      "capacity": 70
+    },
+    {
+      "name": "messages.whatDoYouWantToDo",
+      "offset": 5612,
+      "capacity": 50
+    },
+    {
+      "name": "messages.thatHarvestSpritesIsBusyAnd",
+      "offset": 5712,
+      "capacity": 68
+    },
+    {
+      "name": "messages.okToSendThisHarvestSprites",
+      "offset": 5848,
+      "capacity": 54
+    },
+    {
+      "name": "messages.selectHarvestSpritesToSendOr",
+      "offset": 5956,
+      "capacity": 87
+    },
+    {
+      "name": "messages.memoryCardHasBeenDisconnectedFrom",
+      "offset": 6130,
+      "capacity": 59
+    },
+    {
+      "name": "messages.searchingTheMemoryCard",
+      "offset": 6248,
+      "capacity": 27
+    },
+    {
+      "name": "messages.noMemoryCardInEitherSlot",
+      "offset": 6302,
+      "capacity": 56
+    },
+    {
+      "name": "messages.noMemoryCardInSlot",
+      "offset": 6414,
+      "capacity": 47
+    },
+    {
+      "name": "messages.memoryCardInSlotDamaged",
+      "offset": 6508,
+      "capacity": 38
+    },
+    {
+      "name": "messages.memoryCardInSlotNotFormatted",
+      "offset": 6584,
+      "capacity": 44
+    },
+    {
+      "name": "messages.formattingTheMemoryCardInSlot",
+      "offset": 6672,
+      "capacity": 38
+    },
+    {
+      "name": "messages.formattingFailedForTheMemoryCard",
+      "offset": 6748,
+      "capacity": 49
+    },
+    {
+      "name": "messages.cannotSaveNotEnoughFreeSpace",
+      "offset": 6846,
+      "capacity": 61
+    },
+    {
+      "name": "messages.cannotSaveNoFreeSpaceOn",
+      "offset": 6968,
+      "capacity": 53
+    },
+    {
+      "name": "messages.noLoadableDiaryInMemoryCard",
+      "offset": 7074,
+      "capacity": 41
+    },
+    {
+      "name": "messages.loadingFromMemoryCard",
+      "offset": 7156,
+      "capacity": 60
+    },
+    {
+      "name": "messages.dataHasBeenLoaded",
+      "offset": 7276,
+      "capacity": 23
+    },
+    {
+      "name": "messages.loadingHasFailed",
+      "offset": 7322,
+      "capacity": 20
+    },
+    {
+      "name": "messages.theDiaryIsDamagedLoadingFailed",
+      "offset": 7362,
+      "capacity": 38
+    },
+    {
+      "name": "messages.savingToMemoryCard",
+      "offset": 7438,
+      "capacity": 57
+    },
+    {
+      "name": "messages.dataHasBeenSaved",
+      "offset": 7552,
+      "capacity": 21
+    },
+    {
+      "name": "messages.saveProcessFailed",
+      "offset": 7594,
+      "capacity": 21
+    },
+    {
+      "name": "messages.selectAMemoryCardSlot",
+      "offset": 7636,
+      "capacity": 27
+    },
+    {
+      "name": "messages.selectADiaryToSave",
+      "offset": 7690,
+      "capacity": 24
+    },
+    {
+      "name": "messages.selectADiaryToLoad",
+      "offset": 7738,
+      "capacity": 24
+    },
+    {
+      "name": "messages.farm",
+      "offset": 7786,
+      "capacity": 5
+    },
+    {
+      "name": "messages.glyph8f",
+      "offset": 7796,
+      "capacity": 2
+    },
+    {
+      "name": "messages.pieces",
+      "offset": 7800,
+      "capacity": 7
+    },
+    {
+      "name": "messages.gold",
+      "offset": 7814,
+      "capacity": 2
+    },
+    {
+      "name": "messages.amountShipped",
+      "offset": 7818,
+      "capacity": 15
+    },
+    {
+      "name": "messages.namePanelTitle",
+      "offset": 7848,
+      "capacity": 5
+    },
+    {
+      "name": "messages.help",
+      "offset": 7858,
+      "capacity": 5
+    },
+    {
+      "name": "messages.statusDaysLeft",
+      "offset": 7868,
+      "capacity": 10
+    },
+    {
+      "name": "messages.statusFree",
+      "offset": 7888,
+      "capacity": 5
+    },
+    {
+      "name": "messages.earningsExpenses",
+      "offset": 7898,
+      "capacity": 20
+    },
+    {
+      "name": "messages.thisMonthsAccounts",
+      "offset": 7938,
+      "capacity": 21
+    },
+    {
+      "name": "messages.goGetter",
+      "offset": 7980,
+      "capacity": 10
+    },
+    {
+      "name": "messages.spendTooMuch",
+      "offset": 8000,
+      "capacity": 16
+    },
+    {
+      "name": "messages.idler",
+      "offset": 8032,
+      "capacity": 7
+    },
+    {
+      "name": "messages.satisfactory",
+      "offset": 8046,
+      "capacity": 13
+    },
+    {
+      "name": "messages.youShouldSave",
+      "offset": 8072,
+      "capacity": 16
+    },
+    {
+      "name": "messages.playTooMuch",
+      "offset": 8104,
+      "capacity": 16
+    },
+    {
+      "name": "messages.hardWorker",
+      "offset": 8136,
+      "capacity": 12
+    },
+    {
+      "name": "messages.keepWorking",
+      "offset": 8160,
+      "capacity": 14
+    },
+    {
+      "name": "messages.tryHarder",
+      "offset": 8188,
+      "capacity": 12
+    },
+    {
+      "name": "messages.nothing",
+      "offset": 8212,
+      "capacity": 8
+    },
+    {
+      "name": "messages.level",
+      "offset": 8228,
+      "capacity": 6
+    },
+    {
+      "name": "messages.rebuilding",
+      "offset": 8240,
+      "capacity": 11
+    },
+    {
+      "name": "messages.maximum",
+      "offset": 8262,
+      "capacity": 8
+    },
+    {
+      "name": "messages.letterGrid",
+      "offset": 8278,
+      "capacity": 107
+    },
+    {
+      "name": "messages.symbolGrid",
+      "offset": 8492,
+      "capacity": 83
+    },
+    {
+      "name": "messages.nameLabel",
+      "offset": 8658,
+      "capacity": 6
+    },
+    {
+      "name": "messages.farmSuffix",
+      "offset": 8670,
+      "capacity": 6
+    },
+    {
+      "name": "messages.birthdayLabel",
+      "offset": 8682,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishErr",
+      "offset": 8710,
+      "capacity": 4
+    },
+    {
+      "name": "messages.utensils",
+      "offset": 8718,
+      "capacity": 9
+    },
+    {
+      "name": "messages.ingredient",
+      "offset": 8736,
+      "capacity": 11
+    },
+    {
+      "name": "messages.use",
+      "offset": 8758,
+      "capacity": 4
+    },
+    {
+      "name": "messages.seasonings.sugar",
+      "offset": 8766,
+      "capacity": 6
+    },
+    {
+      "name": "messages.seasonings.salt",
+      "offset": 8778,
+      "capacity": 5
+    },
+    {
+      "name": "messages.seasonings.vinegar",
+      "offset": 8788,
+      "capacity": 8
+    },
+    {
+      "name": "messages.seasonings.soySauce",
+      "offset": 8804,
+      "capacity": 9
+    },
+    {
+      "name": "messages.seasonings.misoPaste",
+      "offset": 8822,
+      "capacity": 11
+    },
+    {
+      "name": "messages.ingredientTitle",
+      "offset": 8844,
+      "capacity": 11
+    },
+    {
+      "name": "messages.ingredientRucksack",
+      "offset": 8866,
+      "capacity": 9
+    },
+    {
+      "name": "messages.ingredientIcebox",
+      "offset": 8884,
+      "capacity": 7
+    },
+    {
+      "name": "messages.ingredientSlash",
+      "offset": 8898,
+      "capacity": 2
+    },
+    {
+      "name": "messages.sleepMenu",
+      "offset": 8902,
+      "capacity": 99
+    },
+    {
+      "name": "messages.howToOperateConfiguration",
+      "offset": 9100,
+      "capacity": 29
+    },
+    {
+      "name": "messages.howToOperateButtons",
+      "offset": 9158,
+      "capacity": 203
+    },
+    {
+      "name": "messages.configurationScreen",
+      "offset": 9564,
+      "capacity": 89
+    },
+    {
+      "name": "messages.type1",
+      "offset": 9742,
+      "capacity": 7
+    },
+    {
+      "name": "messages.type2",
+      "offset": 9756,
+      "capacity": 7
+    },
+    {
+      "name": "messages.type3",
+      "offset": 9770,
+      "capacity": 7
+    },
+    {
+      "name": "messages.analog",
+      "offset": 9784,
+      "capacity": 7
+    },
+    {
+      "name": "messages.on",
+      "offset": 9798,
+      "capacity": 3
+    },
+    {
+      "name": "messages.off",
+      "offset": 9804,
+      "capacity": 4
+    },
+    {
+      "name": "messages.stereo",
+      "offset": 9812,
+      "capacity": 7
+    },
+    {
+      "name": "messages.mono",
+      "offset": 9826,
+      "capacity": 5
+    },
+    {
+      "name": "messages.yes",
+      "offset": 9836,
+      "capacity": 4
+    },
+    {
+      "name": "messages.no",
+      "offset": 9844,
+      "capacity": 3
+    },
+    {
+      "name": "messages.dishes.mayonnaiseS",
+      "offset": 9850,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.mayonnaiseM",
+      "offset": 9876,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.mayonnaiseL",
+      "offset": 9902,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.mayonnaiseXl",
+      "offset": 9928,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishes.salad",
+      "offset": 9956,
+      "capacity": 6
+    },
+    {
+      "name": "messages.dishes.curry",
+      "offset": 9968,
+      "capacity": 6
+    },
+    {
+      "name": "messages.dishes.stew",
+      "offset": 9980,
+      "capacity": 5
+    },
+    {
+      "name": "messages.dishes.misoSoup",
+      "offset": 9990,
+      "capacity": 10
+    },
+    {
+      "name": "messages.dishes.stirFry",
+      "offset": 10010,
+      "capacity": 9
+    },
+    {
+      "name": "messages.dishes.friedRice",
+      "offset": 10028,
+      "capacity": 11
+    },
+    {
+      "name": "messages.dishes.veggiePancake",
+      "offset": 10050,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.sandwich",
+      "offset": 10080,
+      "capacity": 9
+    },
+    {
+      "name": "messages.dishes.fruitJuice",
+      "offset": 10098,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.fruitLatte",
+      "offset": 10122,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.vegetableJuice",
+      "offset": 10146,
+      "capacity": 16
+    },
+    {
+      "name": "messages.dishes.veggieLatte",
+      "offset": 10178,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.mixedJuice",
+      "offset": 10204,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.mixedLatte",
+      "offset": 10228,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.pickledTurnips",
+      "offset": 10252,
+      "capacity": 16
+    },
+    {
+      "name": "messages.dishes.fries",
+      "offset": 10284,
+      "capacity": 6
+    },
+    {
+      "name": "messages.dishes.pickles",
+      "offset": 10296,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.strawberryJam",
+      "offset": 10312,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.strawberryMilk",
+      "offset": 10342,
+      "capacity": 16
+    },
+    {
+      "name": "messages.dishes.tomatoJuice",
+      "offset": 10374,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.ketchup",
+      "offset": 10400,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.popcorn",
+      "offset": 10416,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.pumpkinPudding",
+      "offset": 10432,
+      "capacity": 16
+    },
+    {
+      "name": "messages.dishes.happyEggplant",
+      "offset": 10464,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.sweetPotato",
+      "offset": 10494,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.roastedPotatoes",
+      "offset": 10520,
+      "capacity": 17
+    },
+    {
+      "name": "messages.dishes.greens",
+      "offset": 10554,
+      "capacity": 7
+    },
+    {
+      "name": "messages.dishes.scrambledEggs",
+      "offset": 10568,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.omelet",
+      "offset": 10598,
+      "capacity": 7
+    },
+    {
+      "name": "messages.dishes.riceOmelet",
+      "offset": 10612,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.boiledEgg",
+      "offset": 10636,
+      "capacity": 11
+    },
+    {
+      "name": "messages.dishes.hotMilk",
+      "offset": 10658,
+      "capacity": 9
+    },
+    {
+      "name": "messages.dishes.butter",
+      "offset": 10676,
+      "capacity": 7
+    },
+    {
+      "name": "messages.dishes.cheesecake",
+      "offset": 10690,
+      "capacity": 11
+    },
+    {
+      "name": "messages.dishes.cheeseFondue",
+      "offset": 10712,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishes.applePie",
+      "offset": 10740,
+      "capacity": 10
+    },
+    {
+      "name": "messages.dishes.appleJam",
+      "offset": 10760,
+      "capacity": 10
+    },
+    {
+      "name": "messages.dishes.bambooRice",
+      "offset": 10780,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.grapeJam",
+      "offset": 10804,
+      "capacity": 10
+    },
+    {
+      "name": "messages.dishes.mushroomRice",
+      "offset": 10824,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishes.truffleRice",
+      "offset": 10852,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.sushi",
+      "offset": 10878,
+      "capacity": 6
+    },
+    {
+      "name": "messages.dishes.jamBun",
+      "offset": 10890,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.dinnerRoll",
+      "offset": 10906,
+      "capacity": 12
+    },
+    {
+      "name": "messages.dishes.raisinBread",
+      "offset": 10930,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.sashimi",
+      "offset": 10956,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.grilledFish",
+      "offset": 10972,
+      "capacity": 13
+    },
+    {
+      "name": "messages.dishes.chirashiSushi",
+      "offset": 10998,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.pizza",
+      "offset": 11028,
+      "capacity": 6
+    },
+    {
+      "name": "messages.dishes.noodles",
+      "offset": 11040,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.curryNoodles",
+      "offset": 11056,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishes.tempuraNoodles",
+      "offset": 11084,
+      "capacity": 16
+    },
+    {
+      "name": "messages.dishes.friedNoodles",
+      "offset": 11116,
+      "capacity": 14
+    },
+    {
+      "name": "messages.dishes.cookie",
+      "offset": 11144,
+      "capacity": 7
+    },
+    {
+      "name": "messages.dishes.chocolateCookie",
+      "offset": 11158,
+      "capacity": 17
+    },
+    {
+      "name": "messages.dishes.tempura",
+      "offset": 11192,
+      "capacity": 8
+    },
+    {
+      "name": "messages.dishes.iceCream",
+      "offset": 11208,
+      "capacity": 10
+    },
+    {
+      "name": "messages.dishes.cake",
+      "offset": 11228,
+      "capacity": 5
+    },
+    {
+      "name": "messages.dishes.chocolateCake",
+      "offset": 11238,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.relaxationTea",
+      "offset": 11268,
+      "capacity": 15
+    },
+    {
+      "name": "messages.dishes.foodFiasco",
+      "offset": 11298,
+      "capacity": 12
+    },
+    {
+      "name": "names.honey",
+      "offset": 11322,
+      "capacity": 6
+    },
+    {
+      "name": "names.darling",
+      "offset": 11334,
+      "capacity": 8
+    },
+    {
+      "name": "names.harvestSprites.chef",
+      "offset": 11350,
+      "capacity": 5
+    },
+    {
+      "name": "names.harvestSprites.nappy",
+      "offset": 11360,
+      "capacity": 6
+    },
+    {
+      "name": "names.harvestSprites.timid",
+      "offset": 11372,
+      "capacity": 6
+    },
+    {
+      "name": "names.harvestSprites.hoggy",
+      "offset": 11384,
+      "capacity": 6
+    },
+    {
+      "name": "names.harvestSprites.staid",
+      "offset": 11396,
+      "capacity": 6
+    },
+    {
+      "name": "names.harvestSprites.bold",
+      "offset": 11408,
+      "capacity": 5
+    },
+    {
+      "name": "names.harvestSprites.aqua",
+      "offset": 11418,
+      "capacity": 5
+    },
+    {
+      "name": "names.moneyTitle",
+      "offset": 11428,
+      "capacity": 6
+    },
+    {
+      "name": "names.medalsTitle",
+      "offset": 11440,
+      "capacity": 7
+    },
+    {
+      "name": "names.shopYesNo",
+      "offset": 11454,
+      "capacity": 7
+    },
+    {
+      "name": "names.buyDontBuy",
+      "offset": 11468,
+      "capacity": 13
+    },
+    {
+      "name": "names.goldUnit",
+      "offset": 11494,
+      "capacity": 2
+    },
+    {
+      "name": "names.medalsUnit",
+      "offset": 11498,
+      "capacity": 7
+    },
+    {
+      "name": "names.units",
+      "offset": 11512,
+      "capacity": 6
+    },
+    {
+      "name": "names.dash",
+      "offset": 11524,
+      "capacity": 2
+    },
+    {
+      "name": "names.fishFood",
+      "offset": 11528,
+      "capacity": 10
+    },
+    {
+      "name": "names.seeds.turnip",
+      "offset": 11548,
+      "capacity": 13
+    },
+    {
+      "name": "names.seeds.potato",
+      "offset": 11574,
+      "capacity": 13
+    },
+    {
+      "name": "names.seeds.cucumber",
+      "offset": 11600,
+      "capacity": 15
+    },
+    {
+      "name": "names.seeds.strawberry",
+      "offset": 11630,
+      "capacity": 17
+    },
+    {
+      "name": "names.seeds.cabbage",
+      "offset": 11664,
+      "capacity": 14
+    },
+    {
+      "name": "names.seeds.tomato",
+      "offset": 11692,
+      "capacity": 13
+    },
+    {
+      "name": "names.seeds.corn",
+      "offset": 11718,
+      "capacity": 11
+    },
+    {
+      "name": "names.seeds.onion",
+      "offset": 11740,
+      "capacity": 12
+    },
+    {
+      "name": "names.seeds.pumpkin",
+      "offset": 11764,
+      "capacity": 14
+    },
+    {
+      "name": "names.seeds.pineapple",
+      "offset": 11792,
+      "capacity": 16
+    },
+    {
+      "name": "names.seeds.eggplant",
+      "offset": 11824,
+      "capacity": 15
+    },
+    {
+      "name": "names.seeds.carrot",
+      "offset": 11854,
+      "capacity": 13
+    },
+    {
+      "name": "names.seeds.sweetPotato",
+      "offset": 11880,
+      "capacity": 19
+    },
+    {
+      "name": "names.seeds.spinach",
+      "offset": 11918,
+      "capacity": 14
+    },
+    {
+      "name": "names.seeds.greenPepper",
+      "offset": 11946,
+      "capacity": 19
+    },
+    {
+      "name": "names.seeds.moondrop",
+      "offset": 11984,
+      "capacity": 15
+    },
+    {
+      "name": "names.seeds.pinkCat",
+      "offset": 12014,
+      "capacity": 15
+    },
+    {
+      "name": "names.seeds.magicRed",
+      "offset": 12044,
+      "capacity": 16
+    },
+    {
+      "name": "names.seeds.toyFlower",
+      "offset": 12076,
+      "capacity": 17
+    },
+    {
+      "name": "names.seeds.orangecup",
+      "offset": 12110,
+      "capacity": 16
+    },
+    {
+      "name": "names.seeds.grass",
+      "offset": 12142,
+      "capacity": 12
+    },
+    {
+      "name": "names.wine",
+      "offset": 12166,
+      "capacity": 5
+    },
+    {
+      "name": "names.grapeJuice",
+      "offset": 12176,
+      "capacity": 12
+    },
+    {
+      "name": "names.girlsPresent",
+      "offset": 12200,
+      "capacity": 14
+    },
+    {
+      "name": "names.cheeseMaker",
+      "offset": 12228,
+      "capacity": 13
+    },
+    {
+      "name": "names.mayonnaiseMaker",
+      "offset": 12254,
+      "capacity": 17
+    },
+    {
+      "name": "names.yarnMaker",
+      "offset": 12288,
+      "capacity": 11
+    },
+    {
+      "name": "names.buyTool",
+      "offset": 12310,
+      "capacity": 9
+    },
+    {
+      "name": "names.brush",
+      "offset": 12328,
+      "capacity": 6
+    },
+    {
+      "name": "names.milker",
+      "offset": 12340,
+      "capacity": 7
+    },
+    {
+      "name": "names.clippers",
+      "offset": 12354,
+      "capacity": 9
+    },
+    {
+      "name": "names.improveTool",
+      "offset": 12372,
+      "capacity": 13
+    },
+    {
+      "name": "names.setMeal",
+      "offset": 12398,
+      "capacity": 9
+    },
+    {
+      "name": "names.salad",
+      "offset": 12416,
+      "capacity": 6
+    },
+    {
+      "name": "names.applePie",
+      "offset": 12428,
+      "capacity": 10
+    },
+    {
+      "name": "names.cheesecake",
+      "offset": 12448,
+      "capacity": 11
+    },
+    {
+      "name": "names.cookie",
+      "offset": 12470,
+      "capacity": 7
+    },
+    {
+      "name": "names.water",
+      "offset": 12484,
+      "capacity": 6
+    },
+    {
+      "name": "names.grapeLiquor",
+      "offset": 12496,
+      "capacity": 13
+    },
+    {
+      "name": "names.pineappleJuice",
+      "offset": 12522,
+      "capacity": 16
+    },
+    {
+      "name": "names.milk",
+      "offset": 12554,
+      "capacity": 5
+    },
+    {
+      "name": "names.snowcone",
+      "offset": 12564,
+      "capacity": 9
+    },
+    {
+      "name": "names.roastedCorn",
+      "offset": 12582,
+      "capacity": 13
+    },
+    {
+      "name": "names.pasta",
+      "offset": 12608,
+      "capacity": 6
+    },
+    {
+      "name": "names.pizza",
+      "offset": 12620,
+      "capacity": 6
+    },
+    {
+      "name": "names.bracelet",
+      "offset": 12632,
+      "capacity": 9
+    },
+    {
+      "name": "names.necklace",
+      "offset": 12650,
+      "capacity": 9
+    },
+    {
+      "name": "names.earrings",
+      "offset": 12668,
+      "capacity": 9
+    },
+    {
+      "name": "names.turbojoltXl",
+      "offset": 12686,
+      "capacity": 13
+    },
+    {
+      "name": "names.bodigizerXl",
+      "offset": 12712,
+      "capacity": 13
+    },
+    {
+      "name": "names.truffle",
+      "offset": 12738,
+      "capacity": 8
+    },
+    {
+      "name": "names.powerFruit",
+      "offset": 12754,
+      "capacity": 12
+    },
+    {
+      "name": "names.lumberGoods",
+      "offset": 12778,
+      "capacity": 11
+    },
+    {
+      "name": "names.mystrile",
+      "offset": 12800,
+      "capacity": 9
+    },
+    {
+      "name": "names.buyLumber",
+      "offset": 12818,
+      "capacity": 11
+    },
+    {
+      "name": "names.enlargeHenHouse",
+      "offset": 12840,
+      "capacity": 18
+    },
+    {
+      "name": "names.enlargeOwnHouse",
+      "offset": 12876,
+      "capacity": 18
+    },
+    {
+      "name": "names.enlargeBarn",
+      "offset": 12912,
+      "capacity": 13
+    },
+    {
+      "name": "names.hothouse",
+      "offset": 12938,
+      "capacity": 9
+    },
+    {
+      "name": "names.lumber",
+      "offset": 12956,
+      "capacity": 7
+    },
+    {
+      "name": "names.unit",
+      "offset": 12970,
+      "capacity": 5
+    },
+    {
+      "name": "names.exam",
+      "offset": 12980,
+      "capacity": 7
+    },
+    {
+      "name": "names.getMedicine",
+      "offset": 12994,
+      "capacity": 13
+    },
+    {
+      "name": "names.bodigizer",
+      "offset": 13020,
+      "capacity": 10
+    },
+    {
+      "name": "names.turbojolt",
+      "offset": 13040,
+      "capacity": 10
+    },
+    {
+      "name": "names.chickenFeed",
+      "offset": 13060,
+      "capacity": 13
+    },
+    {
+      "name": "names.buyChicken",
+      "offset": 13086,
+      "capacity": 12
+    },
+    {
+      "name": "names.sellChicken",
+      "offset": 13110,
+      "capacity": 13
+    },
+    {
+      "name": "names.animalMedicine",
+      "offset": 13136,
+      "capacity": 16
+    },
+    {
+      "name": "names.fodder",
+      "offset": 13168,
+      "capacity": 7
+    },
+    {
+      "name": "names.cmPotion",
+      "offset": 13182,
+      "capacity": 12
+    },
+    {
+      "name": "names.smPotion",
+      "offset": 13206,
+      "capacity": 12
+    },
+    {
+      "name": "names.buyCow",
+      "offset": 13230,
+      "capacity": 8
+    },
+    {
+      "name": "names.buySheep",
+      "offset": 13246,
+      "capacity": 10
+    },
+    {
+      "name": "names.sellCow",
+      "offset": 13266,
+      "capacity": 9
+    },
+    {
+      "name": "names.sellSheep",
+      "offset": 13284,
+      "capacity": 11
+    },
+    {
+      "name": "names.bell",
+      "offset": 13306,
+      "capacity": 5
+    },
+    {
+      "name": "names.chickenNames.popuri",
+      "offset": 13316,
+      "capacity": 7
+    },
+    {
+      "name": "names.chickenNames.popuri2",
+      "offset": 13330,
+      "capacity": 7
+    },
+    {
+      "name": "names.chickenNames.cocka",
+      "offset": 13344,
+      "capacity": 6
+    },
+    {
+      "name": "names.chickenNames.doodle",
+      "offset": 13356,
+      "capacity": 7
+    },
+    {
+      "name": "names.chickenNames.doo",
+      "offset": 13370,
+      "capacity": 4
+    },
+    {
+      "name": "names.chickenNames.bukbuk",
+      "offset": 13378,
+      "capacity": 7
+    },
+    {
+      "name": "names.chickenNames.begaak",
+      "offset": 13392,
+      "capacity": 7
+    }
+  ]
+}

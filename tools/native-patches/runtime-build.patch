@@ -1,0 +1,31 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ecfc2e9..8594c4c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -51,3 +51,26 @@ psxrecomp_add_runtime_target(psx-runtime
+   WINDOW_TITLE              "Harvest Moon: Back to Nature (Recompiled)"
+   DEFAULT_GAME_CONFIG_PATH  "game.toml"
+ )
++
++# NatureLoader requires a measured native-only path, not a hidden interpreter.
++target_compile_definitions(psx-runtime PRIVATE NATURE_NATIVE_ONLY=1)
++
++# Development coverage build: split generated overlays preserve native bodies
++# and CRC-validated dispatch while avoiding a 113 MB translation unit.
++if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/generated/native_overlay_parts/dispatch.c")
++  get_target_property(NATURE_SOURCES psx-runtime SOURCES)
++  list(REMOVE_ITEM NATURE_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/generated/overlays_static.c")
++  set_property(TARGET psx-runtime PROPERTY SOURCES "${NATURE_SOURCES}")
++  file(GLOB NATURE_OVERLAY_PARTS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/generated/native_overlay_parts/*.c")
++  target_sources(psx-runtime PRIVATE ${NATURE_OVERLAY_PARTS})
++  if(NOT MSVC)
++    set_source_files_properties(${NATURE_OVERLAY_PARTS} PROPERTIES COMPILE_OPTIONS "-O0")
++  endif()
++endif()
++
++set(NATURE_BOOT_VARIANT "${CMAKE_CURRENT_SOURCE_DIR}/generated/native_boot_variant/overlays_static.c")
++if(EXISTS "${NATURE_BOOT_VARIANT}")
++  target_sources(psx-runtime PRIVATE "${NATURE_BOOT_VARIANT}")
++  set_source_files_properties("${NATURE_BOOT_VARIANT}" PROPERTIES COMPILE_DEFINITIONS
++    "psx_overlay_dispatch=nature_boot_dispatch;psx_overlay_static_get_stats=nature_boot_get_stats")
++endif()

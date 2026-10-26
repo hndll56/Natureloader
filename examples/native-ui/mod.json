@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "id": "native-ui",
+  "name": "NatureLoader UI dalam game",
+  "version": "1.0.0",
+  "game": "SLUS_011.15",
+  "texts": {
+    "messages.selectAMemoryCardSlot": "Pilih slot\nNatureLoader!"
+  }
+}

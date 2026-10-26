@@ -1,0 +1,118 @@
+diff --git a/bios/OpenBIOS.toml b/bios/OpenBIOS.toml
+index de6a781..ba408eb 100644
+--- a/bios/OpenBIOS.toml
++++ b/bios/OpenBIOS.toml
+@@ -81,6 +81,36 @@ runtime_base = "0x80030000"
+ dispatch_key = "rom"
+ kernel_bless = false
+ 
++# NatureLoader native audit: these three boot-installed vector bodies were
++# compared byte-for-byte with RAM at the first fail-before-interpreter stop.
++# The 0x80 exception vector differs at runtime and is deliberately not added.
++[[recompiler.address_model.copy]]
++name         = "Boot A0 vector"
++rom_lo       = "0x1FC06960"
++rom_hi       = "0x1FC06970"
++ram_lo       = "0x000000A0"
++runtime_base = "0x000000A0"
++dispatch_key = "rom"
++kernel_bless = false
++
++[[recompiler.address_model.copy]]
++name         = "Boot B0 vector"
++rom_lo       = "0x1FC06970"
++rom_hi       = "0x1FC06980"
++ram_lo       = "0x000000B0"
++runtime_base = "0x000000B0"
++dispatch_key = "rom"
++kernel_bless = false
++
++[[recompiler.address_model.copy]]
++name         = "Boot C0 vector"
++rom_lo       = "0x1FC06980"
++rom_hi       = "0x1FC06990"
++ram_lo       = "0x000000C0"
++runtime_base = "0x000000C0"
++dispatch_key = "rom"
++kernel_bless = false
++
+ # No [[recompiler.install_slots]]: none identified yet. Runtime-installed
+ # stubs fall to the dirty-RAM interpreter, which is correct (just slower)
+ # until a slot is identified and added.
+diff --git a/recompiler/src/code_generator.cpp b/recompiler/src/code_generator.cpp
+index d3f0b62..ae30c63 100644
+--- a/recompiler/src/code_generator.cpp
++++ b/recompiler/src/code_generator.cpp
+@@ -2358,7 +2358,13 @@ std::string CodeGenerator::translate_basic_block(
+                                            block.successors[0]);
+     } else if (block.exit_instr.type == ControlFlowType::None) {
+         uint32_t next_addr = block.end_addr + 4;
+-        if (known_functions_.count(next_addr) > 0) {
++        if (cps_enabled_) {
++            // A split fall-through must publish its continuation. Merely
++            // checking interrupts leaves pc=0 after CPS entry consumed it.
++            ss << emit_interrupt_check(next_addr, config_.indent);
++            ss << config_.indent << fmt::format(
++                "cpu->pc = 0x{:08X}u; return;  /* CPS fallthrough: split */\n", next_addr);
++        } else if (known_functions_.count(next_addr) > 0) {
+             ss << config_.indent
+                << fmt::format("func_{:08X}(cpu); return;  /* fallthrough to split piece */\n",
+                               next_addr);
+diff --git a/runtime/src/dirty_ram_interp.c b/runtime/src/dirty_ram_interp.c
+index dd4372b..2222756 100644
+--- a/runtime/src/dirty_ram_interp.c
++++ b/runtime/src/dirty_ram_interp.c
+@@ -38,6 +38,7 @@
+ 
+ #include <stdint.h>
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <string.h>
+ 
+ uint64_t g_dirty_ram_blocks_run = 0;
+@@ -1485,6 +1486,32 @@ static int exec_one_fetched_inner(CPUState *cpu, uint32_t pc, uint32_t insn,
+ 
+ static int exec_one_fetched(CPUState *cpu, uint32_t pc, uint32_t insn,
+                             uint32_t *next_pc_out) {
++#ifdef NATURE_NATIVE_ONLY
++    /* NatureLoader audit build: never execute a MIPS interpreter instruction.
++     * Native dispatch remains available; missing coverage is a hard failure. */
++    fprintf(stderr, "NATURE_NATIVE_COVERAGE_GAP pc=0x%08X instruction=0x%08X ra=0x%08X interpreted=%llu\n",
++            pc, insn, cpu->gpr[31], (unsigned long long)g_dirty_ram_insns_run);
++#ifndef PSX_NO_DEBUG_TOOLS
++    extern uint64_t crash_trace_dispatch_seq_get(void);
++    extern uint32_t crash_trace_dispatch_ring_get(int idx);
++    uint64_t trace_end = crash_trace_dispatch_seq_get();
++    uint64_t trace_begin = trace_end > 24 ? trace_end - 24 : 0;
++    for (uint64_t i = trace_begin; i < trace_end; ++i)
++        fprintf(stderr, "NATURE_NATIVE_DISPATCH seq=%llu pc=0x%08X\n",
++                (unsigned long long)i, crash_trace_dispatch_ring_get((int)i));
++#endif
++    const char *dump_path = getenv("NATURE_NATIVE_GAP_DUMP");
++    if (dump_path && *dump_path) {
++        FILE *dump = fopen(dump_path, "wb");
++        if (dump) {
++            size_t written = fwrite(memory_get_ram_ptr(), 1, 2u * 1024u * 1024u, dump);
++            fclose(dump);
++            fprintf(stderr, "NATURE_NATIVE_GAP_DUMP bytes=%llu\n", (unsigned long long)written);
++        }
++    }
++    fflush(stderr);
++    exit(86);
++#endif
+     /* A load's writeback becomes visible to the instruction AFTER its delay
+      * slot: load at N, hidden from N+1, visible from N+2. s_ld_pend_age tracks
+      * that: 0 = armed by the instruction just executed, 1 = the delay slot has
+diff --git a/runtime/src/main.cpp b/runtime/src/main.cpp
+index 7f95519..98f7d65 100644
+--- a/runtime/src/main.cpp
++++ b/runtime/src/main.cpp
+@@ -6054,7 +6054,7 @@ int main(int argc, char** argv) {
+     {
+         std::string mod_error;
+         if (!PSXRecompV4::mod_runtime_initialize(
+-                exe_dir_from_argv(argv[0]) / "mods", game_id,
++                (std::getenv("NATURE_MOD_DIRECTORY") ? std::filesystem::path(std::getenv("NATURE_MOD_DIRECTORY")) : exe_dir_from_argv(argv[0]) / "mods"), game_id,
+                 game_entry_pc, text_guard_exe_path, &mod_error)) {
+             std::fprintf(stderr, "psxrecomp: mods unavailable: %s\n",
+                          mod_error.c_str());

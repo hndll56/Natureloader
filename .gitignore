@@ -1,0 +1,10 @@
+/build*/
+/reference/
+/local-data/
+/*.zip
+*.bin
+*.cue
+*.iso
+*.chd
+*.exe
+__pycache__/

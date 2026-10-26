@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "id": "hello-crops",
+  "name": "Kebun Percobaan",
+  "version": "1.0.0",
+  "game": "SLUS_011.15",
+  "content": {
+    "hello-crops:blue-turnip": {
+      "type": "item",
+      "name": "Lobak Biru",
+      "data": {"sellPrice": 120, "description": "Contoh data mod; belum muncul dalam gameplay."}
+    },
+    "hello-crops:garden-shed": {
+      "type": "building",
+      "name": "Gudang Kebun",
+      "data": {"description": "Contoh registry bangunan; belum dapat dibangun dalam game."}
+    }
+  }
+}
