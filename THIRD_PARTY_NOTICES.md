@@ -1,6 +1,22 @@
 # Third-party material
 
-## User-supplied matching decompilation
+## `beruanglaut-com/backtonature-decompiled`
+
+Source repository: [backtonature-decompiled](https://github.com/beruanglaut-com/backtonature-decompiled).
+The user supplied `hmbtn-decomp-main.zip`, an archive of this project, for
+research and port development. The project describes a matching decompilation
+of the USA PlayStation release (`SLUS_011.15`). Its `LICENSE` applies the
+Unlicense to that repository's original reconstruction, tools, metadata, and
+documentation. This credit records the source used; it does not imply that
+NatureLoader contains copied game code or that the game itself is licensed
+under the Unlicense.
+
+The upstream [`NOTICE.md`](https://github.com/beruanglaut-com/backtonature-decompiled/blob/main/NOTICE.md)
+also credits `coalslav/hmbtn-decomp` (CC0 1.0) and the BTNx translation project
+for parts of its reconstruction and text-codec knowledge. See upstream notice
+for details.
+
+## User-supplied matching decompilation archive
 
 Source: `backtonature-decompiled-main.zip`, supplied locally by the user.
 Its `LICENSE` declares the original reconstruction, tooling, metadata and
