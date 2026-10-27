@@ -84,6 +84,7 @@ Package it as a ZIP with `mod.json` at the root. Install it from the launcher, e
 
 ## Documentation
 
+- [Documentation index](docs/README.md)
 - [AI agent guide](docs/AI_AGENT_GUIDE.md)
 - [Agent contract](AGENTS.md)
 - [Making mods](docs/MEMBUAT_MOD.md)
