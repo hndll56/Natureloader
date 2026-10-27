@@ -164,6 +164,8 @@ Impor disc USA milik sendiri di **Koleksi ROM**, pilih versi tersebut, lalu teka
 
 ## Dokumentasi
 
+- [Panduan AI agent](docs/AI_AGENT_GUIDE.md) — cara memahami, menguji, mengubah, dan meneruskan proyek.
+- [Kontrak agent](AGENTS.md) — aturan repo, peta kode, workflow, dan handoff GitHub.
 - [Membuat mod](docs/MEMBUAT_MOD.md) — paket teks dan alur instalasi.
 - [Konten mod](docs/MOD_CONTENT.md) — schema registry eksperimental dan keterbatasannya.
 - [Mod item native](docs/NATIVE_ITEM_MODS.md) — field retail yang sudah dapat diekspor.
