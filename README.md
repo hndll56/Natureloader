@@ -84,19 +84,19 @@ Package it as a ZIP with `mod.json` at the root. Install it from the launcher, e
 
 ## Documentation
 
-- [Documentation index](docs/README.md)
-- [AI agent guide](docs/AI_AGENT_GUIDE.md)
-- [Agent contract](AGENTS.md)
-- [Making mods](docs/MEMBUAT_MOD.md)
-- [Mod API](docs/MOD_API.md)
-- [Content registry](docs/MOD_CONTENT.md)
-- [Native item patches](docs/NATIVE_ITEM_MODS.md)
-- [Migration](docs/MOD_MIGRATION.md)
-- [Architecture](docs/ARCHITECTURE_V2.md)
-- [Porting plan](docs/PORTING.md)
-- [Native status](docs/NATIVE_PROGRESS.md)
-- [ROM variants](docs/ROM_VARIANTS.md)
-- [Third-party notices](THIRD_PARTY_NOTICES.md)
+- [Documentation index](https://github.com/hndll56/Natureloader/blob/main/docs/README.md)
+- [AI agent guide](https://github.com/hndll56/Natureloader/blob/main/docs/AI_AGENT_GUIDE.md)
+- [Agent contract](https://github.com/hndll56/Natureloader/blob/main/AGENTS.md)
+- [Making mods](https://github.com/hndll56/Natureloader/blob/main/docs/MEMBUAT_MOD.md)
+- [Mod API](https://github.com/hndll56/Natureloader/blob/main/docs/MOD_API.md)
+- [Content registry](https://github.com/hndll56/Natureloader/blob/main/docs/MOD_CONTENT.md)
+- [Native item patches](https://github.com/hndll56/Natureloader/blob/main/docs/NATIVE_ITEM_MODS.md)
+- [Migration](https://github.com/hndll56/Natureloader/blob/main/docs/MOD_MIGRATION.md)
+- [Architecture](https://github.com/hndll56/Natureloader/blob/main/docs/ARCHITECTURE_V2.md)
+- [Porting plan](https://github.com/hndll56/Natureloader/blob/main/docs/PORTING.md)
+- [Native status](https://github.com/hndll56/Natureloader/blob/main/docs/NATIVE_PROGRESS.md)
+- [ROM variants](https://github.com/hndll56/Natureloader/blob/main/docs/ROM_VARIANTS.md)
+- [Third-party notices](https://github.com/hndll56/Natureloader/blob/main/THIRD_PARTY_NOTICES.md)
 
 ## Privacy and licensing
 
