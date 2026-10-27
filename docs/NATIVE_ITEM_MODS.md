@@ -57,6 +57,10 @@ PS-X EXE dan menolak rentang di luar data yang dimuat.
 Tes integrasi dengan ROM USA membuktikan nilai bertanda, alamat, byte pengaman,
 campuran mod teks/item, dan hilangnya patch setelah mod dinonaktifkan. Hash ROM
 serta data base tidak berubah. Ini belum membuktikan transaksi jual atau aksi
-bertani memakai nilai tersebut. Audit headless lokal pada 27 Oktober 2026 berhenti
-di jalur BIOS sebelum entry game, termasuk pada baseline tanpa patch item;
-verifikasi nilai tabel hidup di gameplay masih perlu dilanjutkan.
+bertani memakai nilai tersebut.
+
+The corrected live audit on 2026-10-27 passed stock/modded/restored table reads
+in three native processes, with advancing frames, zero interpreted instructions,
+and an unchanged source executable. The earlier BIOS-stop conclusion came from
+a faulty persistent debugger connection and intentional test cleanup. See
+[the native audit](NATIVE_PROGRESS.md) for the command and exact scope.

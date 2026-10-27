@@ -6,6 +6,83 @@ full farm gameplay is not yet verified. This audit uses the local
 PSXRecomp research checkout in `reference/btn-recomp`; that runtime is not
 linked into the Qt launcher or included in a distribution.
 
+## Live retail item audit (2026-10-27)
+
+`tools/audit_native_items.py` passed three separate native processes: stock,
+`native-balance-v2` enabled, and disabled/restored. It waits for the actual
+`game_state.itemInfo` pointer, reads five signed fields, checks advancing frames
+and zero interpreted instructions, and verifies the source executable hash.
+
+| Field | Stock | Enabled | Restored |
+| --- | --- | --- | --- |
+| Turnip sell price | 60 | 120 | 60 |
+| Turnip stamina | 3 | 6 | 3 |
+| Turnip fatigue | -1 | -2 | -1 |
+| Turnip seed buy price | 120 | 80 | 120 |
+| Sickle stamina | -2 | -1 | -2 |
+
+Run from the project root, using your local supported disc:
+
+```sh
+python3 tools/audit_native_items.py \
+  --launcher build/natureloader \
+  --runtime reference/btn-recomp/build/Harvest_Moon__Back_to_Nature__Recompiled_ \
+  --config reference/btn-recomp/game.toml \
+  --disc /absolute/path/to/disc.cue \
+  --exe local-data/base/SLUS_011.15
+```
+
+Requires Python 3.11+ and loopback sockets. It stops each process after collecting
+evidence and removes private temporary profiles/saves. That intentional SIGTERM
+can leave an `atexit` report; it is not evidence that boot failed.
+
+The earlier temporary audit incorrectly reused a persistent debugger connection
+and assumed `ping` supplied a frame counter. The server closes each connection
+after one request; `frame` supplies frame counts. The reported early BIOS stop
+from that audit was therefore inconclusive. The corrected audit reaches live
+game data. It does not prove buying/using items, new items/NPCs, or farm save/load.
+
+## New Game coverage work (2026-10-27)
+
+A longer title/New Game probe found a native-only coverage gap at `0x800BC3AC`,
+return address `0x800BBC64`. A 52-byte local live-RAM capture (CRC32 `DEE1DCFC`)
+was compiled through the existing boot-variant dispatcher with live-byte guards.
+After rebuilding, title/menu input and the mayor's New Game introduction worked.
+
+Opening the name editor then stopped at `name_entry_step` (`0x800231E8`).
+Its bytes matched the supported executable. An explicit function seed and main
+code regeneration allowed the actual name editor to render and accept input.
+Confirming a name subsequently exposed `name_sound_step` (`0x80023060`).
+
+The address-only `tools/native-patches/runtime-entry-seeds.patch` includes 103
+additional main-executable function entries absent from the previous seed list,
+selected from the supplied decomp's `docs/retail-symbols.json`. Most were already
+covered by discovery; the regenerated dispatch gained eight entries. Reference
+metadata SHA-256: `958cb48b54ec6b9239a6e14cc9b9fde68668f4e8819d1fd776c6a4da55a8a3ca`.
+The local native runtime rebuild succeeded. With those seeds, the probe
+confirmed a player name, birthday, farm name, and dog name, and reached final
+New Game confirmation. These are coverage improvements,
+not evidence of complete farming, native save/load, or new item/NPC gameplay.
+
+Confirming that setup exposed a farm-overlay coverage gap at `0x800E5A1C`,
+return address `0x800E417C`, with zero interpreted instructions. Its 192-byte
+routine has no branch targets outside the captured range. The local capture
+(CRC32 `BCA41963`) compiled successfully and the eight-capture runtime rebuilt.
+Boot/menu were rechecked, but passing that farm transition after this last
+capture remains unverified. Do not describe it as fixed gameplay coverage.
+
+`tools/prepare_native_capture.py` reproduces capture-list preparation from
+player-owned live RAM, verifies the recorded CRC/range, and preserves the input
+capture list. See `tools/native-patches/README.md`. The checked-in metadata has
+no game bytes. Generated captures, main/overlay C, screenshots, and binaries
+remain local and are not part of the published launcher.
+
+The C ABI now exposes `nm_item_fields` with a field presence mask, including
+base patches, explicit zero values, and inheritance references. Core tests cover
+new item/NPC handles across save, missing-mod, and restore cycles. Registry
+validation rejects inheritance cycles and attributes patch failures to their
+authors. These tests run against modcore, not the BTN inventory or NPC engine.
+
 ## Confirmed boot blocker
 
 The native-only audit originally stopped at BIOS RAM vector `0x000000C0`.

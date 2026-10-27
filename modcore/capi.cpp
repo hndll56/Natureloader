@@ -182,6 +182,46 @@ int nm_item_row(NmSession* n, int32_t handle, NmItemRow* out) {
     return 0;
 }
 
+int nm_item_fields(NmSession* n, int32_t handle, NmItemRow* out, uint32_t* present) {
+    if (!n || !n->loaded || !out || !present) return -1;
+    const Record* r = n->s->registry().byHandle("item", handle);
+    if (!r) return -1;
+    const Json& d = r->data;
+    const std::string sprite = d["sprite"].asString();
+    NmItemRow row{};
+    if (sprite.size() >= sizeof row.sprite_asset) return -2;
+    row.handle = handle;
+    row.inherit_handle = -1;
+    if (const Json* inherit = d.find("inherit")) {
+        const Record* source = n->s->registry().find(inherit->asString());
+        if (!source || source->kind != "item" || source->handle < 0) return -1;
+        row.inherit_handle = source->handle;
+    }
+    uint32_t fields = 0;
+    if (d.has("buy_price")) { fields |= NM_ITEM_BUY_PRICE; row.buy_price = static_cast<int16_t>(d["buy_price"].asInt()); }
+    if (d.has("sell_price")) { fields |= NM_ITEM_SELL_PRICE; row.sell_price = static_cast<int16_t>(d["sell_price"].asInt()); }
+    if (d.has("stamina")) { fields |= NM_ITEM_STAMINA; row.stamina = static_cast<int8_t>(d["stamina"].asInt()); }
+    if (d.has("fatigue")) { fields |= NM_ITEM_FATIGUE; row.fatigue = static_cast<int8_t>(d["fatigue"].asInt()); }
+    if (d.has("category")) {
+        fields |= NM_ITEM_CATEGORY;
+        static const char* categories[] = {"crop", "tool", "seed", "consumable", "object"};
+        for (uint8_t i = 0; i < 5; ++i) if (d["category"].asString() == categories[i]) row.category = i;
+    }
+    if (d.has("flags")) {
+        fields |= NM_ITEM_FLAGS;
+        for (const auto& flag : d["flags"].items()) {
+            if (flag.asString() == "pickup") row.flags |= 0x8000;
+            if (flag.asString() == "tool") row.flags |= 0x4000;
+            if (flag.asString() == "seed") row.flags |= 0x40;
+        }
+    }
+    if (d.has("sprite")) fields |= NM_ITEM_SPRITE;
+    std::memcpy(row.sprite_asset, sprite.c_str(), sprite.size() + 1);
+    *out = row;
+    *present = fields;
+    return 0;
+}
+
 const char* nm_name(NmSession* n, const char* id) {
     if (!n || !id) return "";
     const Record* r = n->s->registry().find(id);

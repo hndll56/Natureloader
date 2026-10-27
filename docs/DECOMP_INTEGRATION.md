@@ -34,6 +34,12 @@ gameplay pada daftar di bawah masih merupakan pekerjaan port berikutnya.
   adapter core perlu membaca `nm_record_json` untuk mengetahui field yang benar-benar dioverride.
   Jangan menimpa seluruh baris warisan dengan field default dari `NmItemRow`.
 
+  New adapters can use `nm_item_fields(session, handle, &row, &present)` instead.
+  Copy the inherited row first, then apply only bits set in `present`.
+  Explicit zero values and empty flags remain distinguishable from absent fields.
+  Base-record patches are included. This API does not resolve inheritance chains,
+  allocate runtime tables, or verify NPC/gameplay integration.
+
 - `item_run_use` memperlakukan `&record->use` sebagai `FarmDispatchRecord*` (callback + tiga argumen
   dikemas di tabel). Pada host 64-bit pointer tidak 4 byte, jadi tata letak ini harus diganti struct
   eksplisit sebelum tabel dibangun ulang.

@@ -33,6 +33,11 @@ Schema 1 and schema 2 use one **Mod Chest** workflow, one `mods/` directory, one
 
 Native export currently supports selected UI text and these retail item fields: `buy_price`, `sell_price`, `stamina`, and `fatigue`. Content registry entries for items, NPCs, locations, buildings, tools, assets, hooks, and scripts are authoring/preview data until connected to gameplay.
 
+The live native audit verifies stock/modded/restored item RAM, advancing frames,
+zero interpreted instructions, and an unchanged executable. See
+[native audit instructions](docs/NATIVE_PROGRESS.md). New-item adapters can use
+the C ABI's `nm_item_fields` presence mask to preserve inherited fields.
+
 Not yet playable: new items or entities, HD gameplay sprites, new maps, buildings, tools, events, Lua, gameplay plugins, and native save extensions.
 
 ## Build on Linux

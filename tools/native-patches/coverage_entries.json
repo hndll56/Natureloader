@@ -1,0 +1,8 @@
+{
+  "game": "SLUS_011.15",
+  "exe_sha256": "34e3b35dcd3fb1cd9a7d4813b8a9ef987915826e3d436f1908ecbe2d4fdf1444",
+  "entries": [
+    {"address": "0x800BC3AC", "size": 52, "crc32": "DEE1DCFC", "name": "Title overlay missing entry", "observed_return": "0x800BBC64"},
+    {"address": "0x800E5A1C", "size": 192, "crc32": "BCA41963", "name": "Farm overlay missing entry after New Game", "observed_return": "0x800E417C"}
+  ]
+}

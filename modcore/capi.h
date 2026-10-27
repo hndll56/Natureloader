@@ -60,6 +60,19 @@ int32_t nm_handle(NmSession*, const char* kind, const char* id);               /
 const char* nm_id(NmSession*, const char* kind, int32_t handle);                /* NULL if unavailable */
 int32_t nm_kind_count(NmSession*, const char* kind);                            /* highest handle+1 to size tables */
 int nm_item_row(NmSession*, int32_t handle, NmItemRow* out);                    /* 0 ok */
+/* Presence bits for nm_item_fields. A zero value with its bit set is an
+ * explicit override; an absent bit preserves the inherited retail field. */
+enum NmItemField {
+    NM_ITEM_BUY_PRICE = 1u << 0, NM_ITEM_SELL_PRICE = 1u << 1,
+    NM_ITEM_STAMINA = 1u << 2, NM_ITEM_FATIGUE = 1u << 3,
+    NM_ITEM_CATEGORY = 1u << 4, NM_ITEM_FLAGS = 1u << 5,
+    NM_ITEM_SPRITE = 1u << 6
+};
+/* Read authored fields, including patches to base records. Copy inherit_handle
+ * first, then apply only fields in *present. Does not resolve inheritance or
+ * expand the game's tables. Returns -1 before load/on unavailable records,
+ * -2 if a sprite ID cannot fit. Outputs stay unchanged on failure. */
+int nm_item_fields(NmSession*, int32_t handle, NmItemRow* out, uint32_t* present);
 const char* nm_name(NmSession*, const char* id);                                /* localized, valid until next call */
 /* Generic record access: JSON of a record's data (shop stock, area exits, ...), and enumeration. */
 const char* nm_record_json(NmSession*, const char* id);                        /* "" if unknown; valid until next call */

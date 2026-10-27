@@ -343,6 +343,30 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
                 E("target override harus berawalan base:tex/, base:sound/ atau base:font/");
         }
     }
+    // Item inheritance must terminate before a host copies rows. Walk the
+    // single-parent graph iteratively so long mod chains cannot overflow the
+    // host stack. Attribute cycle edges to the actual inherit-field author.
+    std::map<std::string, int> state;
+    for (const Record* start : all("item")) {
+        if (state[start->id] != 0) continue;
+        std::vector<const Record*> path;
+        const Record* current = start;
+        while (current && current->kind == "item" && state[current->id] == 0) {
+            state[current->id] = 1;
+            path.push_back(current);
+            const Json* parent = current->data.find("inherit");
+            current = parent && parent->isString() ? find(parent->asString()) : nullptr;
+        }
+        if (current && current->kind == "item" && state[current->id] == 1) {
+            const auto first = std::find(path.begin(), path.end(), current);
+            for (auto edge = first; edge != path.end(); ++edge) {
+                const auto author = fieldOwner_.find((*edge)->id + "#inherit");
+                const std::string owner = author == fieldOwner_.end() ? (*edge)->owner : author->second;
+                errs[owner].push_back((*edge)->id + ": item inheritance cycle");
+            }
+        }
+        for (const Record* entry : path) state[entry->id] = 2;
+    }
     return errs;
 }
 
