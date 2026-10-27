@@ -1,0 +1,31 @@
+{
+  "npc": {
+    "pak-biru": {
+      "name": {"en": "Mr. Blue", "id": "Pak Biru"},
+      "sprite": "kebunku:sprites/pak-biru.png",
+      "home_area": "kebunku:kebun-rahasia",
+      "dialog": "kebunku:sapaan",
+      "hooks": {"on_talk": "kebunku:ngobrol"}
+    }
+  },
+  "area": {
+    "kebun-rahasia": {
+      "name": {"en": "Secret Garden", "id": "Kebun Rahasia"},
+      "map": "kebunku:maps/kebun-rahasia.map",
+      "entrances": [{"id": "gerbang", "x": 8, "y": 15}],
+      "exits": [{"rect": [6, 15, 4, 1], "to_section": 1, "entrance": "default"}],
+      "npcs": ["kebunku:pak-biru"],
+      "hooks": {"on_enter": "kebunku:masuk-kebun"}
+    }
+  },
+  "shop": {
+    "warung-biru": {
+      "name": {"en": "Blue Stall", "id": "Warung Biru"},
+      "owner": "kebunku:pak-biru",
+      "stock": [{"item": "kebunku:benih-lobak-biru"}, {"item": "base:turnip-seeds", "price": 120}]
+    }
+  },
+  "dialog": {
+    "sapaan": {"lines": [{"speaker": "kebunku:pak-biru", "text": {"en": "Welcome to my garden!", "id": "Selamat datang di kebunku!"}}]}
+  }
+}

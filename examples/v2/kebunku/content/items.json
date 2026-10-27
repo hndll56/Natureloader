@@ -1,0 +1,29 @@
+{
+  "item": {
+    "lobak-biru": {
+      "name": {"en": "Blue Turnip", "id": "Lobak Biru"},
+      "description": {"en": "A rare turnip that restores stamina.", "id": "Lobak langka yang memulihkan stamina."},
+      "category": "crop",
+      "buy_price": 0,
+      "sell_price": 120,
+      "stamina": 30,
+      "fatigue": -10,
+      "sprite": "kebunku:sprites/lobak-biru.png",
+      "flags": ["pickup"],
+      "shippable": true,
+      "hooks": {"use": "kebunku:makan-lobak"}
+    },
+    "benih-lobak-biru": {
+      "name": {"en": "Blue Turnip Seeds", "id": "Benih Lobak Biru"},
+      "category": "seed",
+      "buy_price": 200,
+      "sell_price": 100,
+      "sprite": "kebunku:sprites/lobak-biru.png",
+      "inherit": "base:turnip-seeds",
+      "flags": ["tool", "seed"]
+    }
+  },
+  "$patch": {
+    "base:turnip": {"sell_price": 70}
+  }
+}

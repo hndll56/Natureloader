@@ -1,5 +1,10 @@
 # Membuat mod untuk NatureLoader
 
+Panduan di bawah membahas format schema 1 pada tab **Peti mod USA**. Untuk
+paket schema 2 dengan dependensi, aset, script deklaratif, dan registry lebih
+lengkap, gunakan tab **Modcore v2** dan [panduan API v2](MOD_API.md). Teks UI v2
+sudah memakai jalur exporter native; konten gameplay baru tetap belum terhubung.
+
 NatureLoader saat ini punya dua jalur mod:
 
 1. `texts`: mengganti teks game retail. Mod ini bisa memengaruhi teks runtime native USA yang diuji.

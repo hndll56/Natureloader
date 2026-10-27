@@ -1,5 +1,9 @@
 # Format mod konten eksperimental
 
+Dokumen ini menjelaskan schema 1. Schema 2 tersedia melalui tab **Modcore v2**;
+lihat [API v2](MOD_API.md) untuk dependensi, registry, dan profil authoring-nya.
+Kedua format masih belum menambahkan entitas baru ke gameplay BTN.
+
 Registry ini membantu memasang dan memeriksa data mod melalui launcher. Registry
 belum terhubung ke gameplay BTN. Record `ui_theme` belum mengubah UI game,
 record `item` belum menambah item yang dapat dipakai, dan record `sprite` belum

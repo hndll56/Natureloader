@@ -5,7 +5,11 @@
 The intended product is a native PC game runtime with an integrated mod
 launcher. Players supply their own disc once, then install and switch mods
 without replacing the disc image. Windows and Linux are first; Android follows.
-Version 0.1 implements the import and native text-mod workbench, not the game.
+Version 0.3 also includes the experimental standalone modcore library/CLI.
+The Qt launcher keeps its schema 1 pipeline and adds a separate schema 2 tab
+for ZIP installation, dependency validation, and authoring profiles. Text-only
+schema 2 packs use the native RAM exporter; gameplay records and hooks are
+not connected to BTN. See `ARCHITECTURE_V2.md` for that boundary.
 
 ## Findings from the supplied decompilation
 
@@ -17,8 +21,10 @@ reproduced here: the matching SDK/container build was not run.
 That earlier archive explicitly excludes decompiled code overlays in
 `A_FILE.BIN` and keeps linked PSY-Q runtime code as assembly generated from the
 ROM. A second, newer user-supplied archive,
-`hmbtn-decomp-main.zip`, is from
-[`beruanglaut-com/backtonature-decompiled`](https://github.com/beruanglaut-com/backtonature-decompiled).
+`hmbtn-decomp-main.zip`, is a separate CC0-licensed research source. Its
+upstream identity has not been established from the archive alone. The
+[beruanglaut-com project](https://github.com/beruanglaut-com/backtonature-decompiled)
+is credited separately for the earlier Unlicense reference.
 Its README describes a matching rebuild of the EXE and 13 overlays; its source
 tree includes farm (`11_GF_FARM`), title (`27_GF_TITLE`), save/load
 (`15_saveload`), memory card, staff roll, and minigame overlays. This is a

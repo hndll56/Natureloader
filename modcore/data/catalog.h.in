@@ -1,0 +1,3 @@
+// Embedded authoring catalog; no ROM assets or game text.
+#pragma once
+inline constexpr char natureBaseCatalog[] = R"NATURE_CATALOG(@NATURE_BASE_CATALOG@)NATURE_CATALOG";

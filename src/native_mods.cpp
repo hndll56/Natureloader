@@ -1,4 +1,5 @@
 #include "native_mods.h"
+#include "modcore_library.h"
 #include <QCryptographicHash>
 #include <QDir>
 #include <QTemporaryDir>
@@ -14,6 +15,13 @@ QString exportNativeTextMods(const Library &library, const QString &exePath, con
     for (const auto &mod : library.mods()) if (mod.enabled) {
         if (!mod.content.isEmpty()) throw std::runtime_error("Nonaktifkan mod konten: belum terhubung ke gameplay native.");
         for (auto it = mod.texts.begin(); it != mod.texts.end(); ++it) resolved.insert(it.key(), it.value());
+    }
+    const auto v2Texts = ModcoreLibrary(library.root()).nativeTexts();
+    for (auto it = v2Texts.begin(); it != v2Texts.end(); ++it) {
+        if (resolved.contains(it.key()))
+            throw std::runtime_error(("Teks v1 dan v2 memakai key yang sama: " + it.key()
+                + ". Nonaktifkan salah satu mod sebelum menjalankan native.").toStdString());
+        resolved.insert(it.key(), it.value());
     }
     QString manifest = "format_version = 1\nid = \"nature.texts\"\nversion = \"1.0.0\"\nname = \"NatureLoader text overrides\"\nresolver = \"declarative\"\n"
         "[[target]]\ngame_id = \"SLUS-01115\"\nexe_sha256 = \"" + QString(ExeHash) + "\"\n";

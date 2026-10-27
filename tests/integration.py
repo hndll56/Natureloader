@@ -81,11 +81,33 @@ def main():
         run("--disable", "native-ui")
         clean = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
         assert "patch" not in tomllib.loads((clean / "packages/nature.texts/1.0.0/manifest.toml").read_text())
+        # Schema 2 uses the same verified RAM patch path, with a separate persisted profile.
+        v2_manifest = {"schema": 2, "id": "native-ui-v2", "name": "UI v2", "version": "1.0.0",
+                       "game": "SLUS_011.15", "api": ">=1.0 <2",
+                       "texts": {"messages.selectAMemoryCardSlot": "Pilih slot\nNatureLoader v2"}}
+        archive = root / "native-ui-v2.zip"
+        with zipfile.ZipFile(archive, "w") as output:
+            output.writestr("mod.json", json.dumps(v2_manifest))
+        run("--v2-install", str(archive))
+        assert run("--v2-status")["enabled"] == []
+        run("--v2-enable", "native-ui-v2")
+        assert run("--v2-status")["loaded"] == ["native-ui-v2"]
+        exported = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
+        patch = tomllib.loads((exported / "packages/nature.texts/1.0.0/manifest.toml").read_text())["patch"][0]
+        assert len(bytes.fromhex(patch["replace"])) == 54
+        assert bytes.fromhex(patch["replace"])[0:2] == b"\x0f\x00"
+        # Cross-profile text conflicts are explicit; neither source is silently selected.
+        run("--enable", "native-ui")
+        run("--native-export", str(base / "SLUS_011.15"), success=False)
+        run("--disable", "native-ui")
+        run("--v2-disable", "native-ui-v2")
+        clean = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
+        assert "patch" not in tomllib.loads((clean / "packages/nature.texts/1.0.0/manifest.toml").read_text())
         run("--import", str(rom), success=False)
         assert {path.name: digest(path) for path in base.iterdir()} == hashes_before
         assert not run("--status")["gameplayReady"]
     assert digest(rom) == original_hash, "Source ROM changed"
-    print("PASS: real ROM import, 354 texts, 32 members, install/enable/disable, conflicts, restart persistence, license retention, unchanged base and ROM SHA-256.")
+    print("PASS: real ROM import, 354 texts, 32 members, schema 1/2 native text exports, conflicts, restart persistence, unchanged base and ROM SHA-256.")
 
 
 if __name__ == "__main__":

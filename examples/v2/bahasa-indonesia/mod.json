@@ -1,0 +1,10 @@
+{
+  "schema": 2, "id": "bahasa-indonesia", "name": "Bahasa Indonesia", "version": "1.0.0",
+  "game": "SLUS_011.15", "api": ">=1.0",
+  "content": {
+    "language": {
+      "id": {"locale": "id", "name": "Bahasa Indonesia",
+             "strings": {"ui.continue": "Lanjutkan", "ui.new_game": "Permainan Baru"}}
+    }
+  }
+}

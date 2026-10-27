@@ -1,0 +1,30 @@
+{
+  "handlers": {
+    "makan-lobak": [
+      {"do": "add_stamina", "amount": 30},
+      {"do": "set_flag", "flag": "lobak-dimakan", "value": {"op": "+", "a": {"flag": "lobak-dimakan"}, "b": 1}},
+      {"do": "if", "cond": {"op": ">=", "a": {"flag": "lobak-dimakan"}, "b": 3},
+       "then": [{"do": "give_item", "item": "benih-lobak-biru", "count": 2},
+                {"do": "show_text", "text": {"en": "Three turnips! You found some seeds.", "id": "Tiga lobak! Kamu menemukan benih."}},
+                {"do": "set_flag", "flag": "lobak-dimakan", "value": 0}],
+       "else": [{"do": "show_text", "text": {"en": "Crunchy!", "id": "Renyah!"}}]}
+    ],
+    "masuk-kebun": [
+      {"do": "if", "cond": {"not": {"flag": "kunjungan-pertama"}},
+       "then": [{"do": "set_flag", "flag": "kunjungan-pertama", "value": true},
+                {"do": "give_item", "item": "lobak-biru", "count": 1},
+                {"do": "show_text", "text": {"en": "A turnip lies by the gate.", "id": "Ada lobak di dekat gerbang."}}]}
+    ],
+    "ngobrol": [
+      {"do": "show_text", "text": {"en": "Mr. Blue: Nice weather.", "id": "Pak Biru: Cuacanya bagus."}},
+      {"do": "cancel"}
+    ],
+    "pagi": [
+      {"do": "call", "handler": "bonus-hari-ganjil"}
+    ],
+    "bonus-hari-ganjil": [
+      {"do": "if", "cond": {"op": "==", "a": {"op": "%", "a": {"day": 1}, "b": 2}, "b": 1},
+       "then": [{"do": "add_money", "amount": 10}]}
+    ]
+  }
+}

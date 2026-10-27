@@ -1,0 +1,15 @@
+{
+  "schema": 2,
+  "id": "kebunku",
+  "name": "Kebunku: Lobak Biru dan Kebun Rahasia",
+  "version": "1.0.0",
+  "authors": ["contoh"],
+  "description": "Item baru, NPC baru, area baru, toko, dan perilaku lewat API resmi.",
+  "game": "SLUS_011.15",
+  "api": ">=1.0 <2",
+  "permissions": ["inventory", "player", "ui", "save", "world"],
+  "content": ["content/items.json", "content/world.json"],
+  "scripts": ["scripts/main.script.json"],
+  "hooks": [{"on": "day.start", "handler": "pagi", "priority": 10}],
+  "save_version": 1
+}

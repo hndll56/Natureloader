@@ -44,6 +44,8 @@ Data ROM tetap di direktori data lokal. Profil dipisahkan per hash ROM agar mod 
 
 ## Status modding
 
+Tabel ini menjelaskan dukungan launcher dan runtime BTN saat ini. Modcore v2 terpisah dijelaskan setelah tabel.
+
 | Jenis perubahan | Status |
 | --- | --- |
 | Teks UI tertentu | Bisa diterapkan ke RAM runtime native USA yang didukung; glyph dan kapasitas masih mengikuti batas retail. |
@@ -54,6 +56,35 @@ Data ROM tetap di direktori data lokal. Profil dipisahkan per hash ROM agar mod 
 | ROM hack dengan executable berbeda | Bisa dikatalogkan; belum tentu bisa dijalankan native. |
 
 Jadi, registry konten **belum** berarti konten baru bisa dimainkan. Lihat [kemajuan port](docs/PORTING.md), [status native](docs/NATIVE_PROGRESS.md), dan [format konten eksperimental](docs/MOD_CONTENT.md) untuk detail dan batas yang diketahui.
+
+## Fondasi modding v2 eksperimental
+
+Paket lokal `Natureloader-v2-modcore.zip` menyediakan fondasi tambahan yang kini dibangun sebagai library `nature_modcore` dan CLI `naturemod`. Modul ini mencakup resolver dependensi/versi, registry ID, aset dan override melalui VFS, hook dan script deklaratif, ekstensi data save, serta C ABI untuk disambungkan ke core game.
+
+**Tab Modcore v2 kini memakai library ini** untuk pemasangan ZIP, aktivasi, validasi dependensi, urutan efektif, dan pemeriksaan registry. Profil v2 menyimpan pemetaan ID authoring secara persisten. Mod teks v2 memakai jalur ekspor RAM native yang sama dengan mod teks lama. Contoh item, NPC, area, toko, dan sprite HD di `examples/v2/` masih membuktikan kontrak lewat core tiruan; file map contoh adalah placeholder. Konten tersebut belum bisa dimainkan di BTN.
+
+Untuk memeriksa mod schema 2 tanpa Qt, ROM, atau runtime game:
+
+```sh
+cmake -S . -B build-modcore -DNATURE_BUILD_LAUNCHER=OFF -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-modcore --parallel
+./build-modcore/naturemod check examples/v2
+./build-modcore/naturemod list examples/v2
+ctest --test-dir build-modcore --output-on-failure
+```
+
+Lihat [API mod v2](docs/MOD_API.md), [arsitektur v2](docs/ARCHITECTURE_V2.md), dan [titik integrasi decomp](docs/DECOMP_INTEGRATION.md). ABI dan format masih eksperimental. Rentang ID beberapa tipe masih perkiraan dan perlu disesuaikan dengan gameplay asli.
+
+Contoh teks UI v2 yang memakai jalur native:
+
+```sh
+cmake -E chdir examples/native-ui-v2 cmake -E tar cf ../../build/native-ui-v2.zip --format=zip mod.json
+./build/natureloader --data local-data --v2-install build/native-ui-v2.zip
+./build/natureloader --data local-data --v2-enable native-ui-v2
+./build/natureloader --data local-data --v2-status
+```
+
+Pasang ZIP schema 2 lewat tab **Modcore v2**. Mod yang membutuhkan dependensi baru dapat dipasang nonaktif; aktivasi ditolak sampai dependensi dan seluruh paket valid. Mod konten/script/aset aktif masih memblokir boot BTN agar fitur yang belum didukung tidak diabaikan. Key teks yang muncul pada profil v1 dan v2 sekaligus harus diselesaikan dengan menonaktifkan salah satu mod.
 
 ## Memasang mod
 
@@ -134,6 +165,9 @@ Impor disc USA milik sendiri di **Koleksi ROM**, pilih versi tersebut, lalu teka
 
 - [Membuat mod](docs/MEMBUAT_MOD.md) — paket teks dan alur instalasi.
 - [Konten mod](docs/MOD_CONTENT.md) — schema registry eksperimental dan keterbatasannya.
+- [API mod v2](docs/MOD_API.md) — format folder mod dan CLI pemeriksa.
+- [Arsitektur v2](docs/ARCHITECTURE_V2.md) — registry, dependensi, VFS, hook, dan save.
+- [Integrasi decomp](docs/DECOMP_INTEGRATION.md) — sambungan yang masih perlu dikerjakan pada core game.
 - [Kemajuan port](docs/PORTING.md) — arsitektur, temuan decomp, dan milestone gameplay.
 - [Status native](docs/NATIVE_PROGRESS.md) — catatan runtime dan bukti yang tersedia.
 - [Varian ROM](docs/ROM_VARIANTS.md) — USA, ROM hack, dan kompatibilitas.

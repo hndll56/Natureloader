@@ -1,0 +1,9 @@
+{
+  "recipe": {
+    "sup-lobak": {
+      "name": {"en": "Blue Turnip Soup", "id": "Sup Lobak Biru"},
+      "ingredients": ["kebunku:lobak-biru", "base:turnip"],
+      "result": "kebunku:lobak-biru"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema": 2,
+  "id": "native-ui-v2",
+  "name": "NatureLoader UI v2",
+  "version": "1.0.0",
+  "game": "SLUS_011.15",
+  "api": ">=1.0 <2",
+  "texts": {
+    "messages.selectAMemoryCardSlot": "Pilih slot\nNatureLoader v2"
+  }
+}

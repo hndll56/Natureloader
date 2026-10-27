@@ -1,0 +1,6 @@
+{
+  "schema": 2, "id": "kebunku-plus", "name": "Kebunku Plus", "version": "0.2.0",
+  "game": "SLUS_011.15", "api": "^1.0",
+  "depends": {"kebunku": ">=1.0.0 <2"},
+  "content": ["content/recipes.json"]
+}

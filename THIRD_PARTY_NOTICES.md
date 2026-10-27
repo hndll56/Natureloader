@@ -3,8 +3,9 @@
 ## `beruanglaut-com/backtonature-decompiled`
 
 Source repository: [backtonature-decompiled](https://github.com/beruanglaut-com/backtonature-decompiled).
-The user supplied `hmbtn-decomp-main.zip`, an archive of this project, for
-research and port development. The project describes a matching decompilation
+This project is credited as a reference for BTN research and port development.
+The earlier user-supplied `backtonature-decompiled-main.zip` supplied the
+metadata and reconstruction described below. The project describes a matching decompilation
 of the USA PlayStation release (`SLUS_011.15`). Its `LICENSE` applies the
 Unlicense to that repository's original reconstruction, tools, metadata, and
 documentation. This credit records the source used; it does not imply that
@@ -61,3 +62,17 @@ notice. Their complete license files remain in that checkout; neither runtime
 nor generated game code is included by this project's install target.
 Local source changes are recorded in `tools/native-patches/`. This experimental
 integration is not a relicensing of the framework or the game.
+
+## Additional local research and modcore material
+
+The separately supplied `hmbtn-decomp-main.zip` has a CC0 1.0 license for its
+own work and includes overlay source. It is distinct from the earlier
+Unlicense archive; its name alone does not establish its upstream identity.
+Neither source archive is redistributed here.
+
+The experimental `modcore/`, `examples/v2/`, CLI, and initial modcore tests
+were supplied in `Natureloader-v2-modcore.zip` and then reviewed and adapted
+locally. The authoring catalog records symbolic item names/numbers from
+`hmbtn-decomp` headers, not game images, music, dialogue, or executable bytes.
+`tools/gen_base_catalog.py` documents how that catalog is generated. This
+import does not change the licensing of the decompilation or the game.

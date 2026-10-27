@@ -1,0 +1,10 @@
+{
+  "schema": 2, "id": "hd-pack", "name": "Sprite Pemain HD (contoh)", "version": "1.0.0",
+  "game": "SLUS_011.15", "api": ">=1.0",
+  "load_after": ["kebunku"],
+  "content": {
+    "asset_override": {
+      "player-hd": {"target": "base:tex/11/3", "file": "hd-pack:tex/player-hd.png", "scale": 4, "pivot": [64, 180]}
+    }
+  }
+}

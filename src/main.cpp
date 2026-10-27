@@ -4,6 +4,8 @@
 #include "launcher_theme.h"
 #include "rom_panel.h"
 #include "asset_panel.h"
+#include "modcore_library.h"
+#include "modcore_panel.h"
 #include <QCheckBox>
 #include <QApplication>
 #include <QCommandLineParser>
@@ -74,6 +76,7 @@ public:
             refreshContent(contentSearch->text());
         });
         tabs->addTab(new AssetPanel(library.root(), tabs), "Aset native USA");
+        tabs->addTab(new ModcorePanel(library.root(), tabs), "Modcore v2");
         layout->addWidget(tabs, 1);
         status_ = new QLabel;
         status_->setTextFormat(Qt::PlainText);
@@ -261,19 +264,20 @@ private:
 int main(int argc, char **argv) {
     bool cli = false;
     for (int i = 1; i < argc; ++i)
-        if (QStringList{"--import", "--status", "--native-export", "--content", "--install", "--enable", "--disable", "--remove", "--text", "--catalog-import", "--catalog-list", "--catalog-select", "--catalog-verify", "--help", "-h"}.contains(QString::fromLocal8Bit(argv[i]))) cli = true;
+        if (QStringList{"--import", "--status", "--native-export", "--content", "--install", "--enable", "--disable", "--remove", "--text", "--catalog-import", "--catalog-list", "--catalog-select", "--catalog-verify", "--v2-install", "--v2-enable", "--v2-disable", "--v2-remove", "--v2-status", "--help", "-h"}.contains(QString::fromLocal8Bit(argv[i]))) cli = true;
     std::unique_ptr<QCoreApplication> app;
     if (cli) app = std::make_unique<QCoreApplication>(argc, argv);
     else app = std::make_unique<QApplication>(argc, argv);
     QCoreApplication::setApplicationName("NatureLoader");
     QCoreApplication::setOrganizationName("NatureLoader");
     QCommandLineParser parser;
-    parser.setApplicationDescription("NatureLoader 0.2 — ROM catalog and native port workbench; gameplay is not implemented.");
+    parser.setApplicationDescription("NatureLoader 0.3 — ROM catalog, experimental native launch, and mod workbench.");
     parser.addHelpOption();
-    for (const auto &name : {"data", "native-export", "import", "install", "enable", "disable", "remove", "text", "screenshot", "catalog-import", "catalog-select", "catalog-verify"})
+    for (const auto &name : {"data", "native-export", "import", "install", "enable", "disable", "remove", "text", "screenshot", "catalog-import", "catalog-select", "catalog-verify", "v2-install", "v2-enable", "v2-disable", "v2-remove"})
         parser.addOption({name, QString("%1 value").arg(name), "value"});
     parser.addOption({"status", "Print library status as JSON."});
     parser.addOption({"content", "Print enabled mod content registry; not bound to gameplay."});
+    parser.addOption({"v2-status", "Print resolved schema 2 profile and authoring registry as JSON."});
     parser.addOption({"catalog-list", "Print detected ROM variants, without claiming native compatibility."});
     parser.addOption({"smoke-test", "Construct the native launcher and exit."});
     parser.process(*app);
@@ -284,7 +288,12 @@ int main(int argc, char **argv) {
         nature::Library library(root);
         nature::RomCatalog catalog(root);
         QJsonObject result;
-        if (parser.isSet("catalog-import")) result = catalog.importRom(parser.value("catalog-import"));
+        if (parser.isSet("v2-install")) result = {{"installed", nature::ModcoreLibrary(root).installZip(parser.value("v2-install")).id}};
+        else if (parser.isSet("v2-enable")) { nature::ModcoreLibrary v2(root); v2.setEnabled(parser.value("v2-enable"), true); result = v2.inspect(); }
+        else if (parser.isSet("v2-disable")) { nature::ModcoreLibrary v2(root); v2.setEnabled(parser.value("v2-disable"), false); result = v2.inspect(); }
+        else if (parser.isSet("v2-remove")) result = {{"recoveryDirectory", nature::ModcoreLibrary(root).removeMod(parser.value("v2-remove"))}};
+        else if (parser.isSet("v2-status")) result = nature::ModcoreLibrary(root).inspect();
+        else if (parser.isSet("catalog-import")) result = catalog.importRom(parser.value("catalog-import"));
         else if (parser.isSet("catalog-list")) result = {{"selected", catalog.selected()}, {"roms", catalog.entries()}};
         else if (parser.isSet("catalog-select")) { catalog.select(parser.value("catalog-select")); result = catalog.metadata(catalog.selected()); }
         else if (parser.isSet("catalog-verify")) {
