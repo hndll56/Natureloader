@@ -6,10 +6,10 @@ The intended product is a native PC game runtime with an integrated mod
 launcher. Players supply their own disc once, then install and switch mods
 without replacing the disc image. Windows and Linux are first; Android follows.
 Version 0.3 also includes the experimental standalone modcore library/CLI.
-The Qt launcher keeps its schema 1 pipeline and adds a separate schema 2 tab
-for ZIP installation, dependency validation, and authoring profiles. Text-only
-schema 2 packs use the native RAM exporter; gameplay records and hooks are
-not connected to BTN. See `ARCHITECTURE_V2.md` for that boundary.
+The Qt launcher now routes schema 1 and 2 through one package/profile backend
+using modcore for ordering and validation. Native export supports text and four
+existing retail item fields; new entities and gameplay hooks remain unbound.
+See `NATIVE_ITEM_MODS.md` and `MOD_MIGRATION.md` for the current boundaries.
 
 ## Findings from the supplied decompilation
 

@@ -5,7 +5,6 @@
 #include "rom_panel.h"
 #include "asset_panel.h"
 #include "modcore_library.h"
-#include "modcore_panel.h"
 #include <QCheckBox>
 #include <QApplication>
 #include <QCommandLineParser>
@@ -47,7 +46,7 @@ public:
         tabs->addTab(new RomPanel(library.root(), tabs), "Koleksi ROM");
         auto *workbench = new QWidget;
         auto *workLayout = new QVBoxLayout(workbench);
-        tabs->addTab(workbench, "Peti mod USA");
+        tabs->addTab(workbench, "Peti mod");
         auto *contentPage = new QWidget;
         auto *contentLayout = new QVBoxLayout(contentPage);
         auto *contentNotice = new QLabel("Registry konten dari mod aktif. Data item, NPC, dan lokasi dapat diperiksa di sini; belum diterapkan ke gameplay.");
@@ -76,7 +75,6 @@ public:
             refreshContent(contentSearch->text());
         });
         tabs->addTab(new AssetPanel(library.root(), tabs), "Aset native USA");
-        tabs->addTab(new ModcorePanel(library.root(), tabs), "Modcore v2");
         layout->addWidget(tabs, 1);
         status_ = new QLabel;
         status_->setTextFormat(Qt::PlainText);
@@ -90,7 +88,7 @@ public:
         workLayout->addLayout(actions);
         auto *columns = new QHBoxLayout;
         auto *left = new QVBoxLayout;
-        left->addWidget(new QLabel("PETI MOD  ·  Urutan bawah mendapat prioritas"));
+        left->addWidget(new QLabel("PETI MOD  ·  Prioritas mengikuti urutan dan dependensi"));
         mods_ = new QListWidget;
         mods_->setAccessibleName("Daftar mod");
         left->addWidget(mods_);
@@ -204,7 +202,7 @@ private:
                 if (it.key() == selected) contentKeys_->setCurrentItem(item);
             }
             filterContent(query);
-            if (contentRegistry_.isEmpty()) contentPreview_->setPlainText("Belum ada konten. Pasang dan aktifkan mod konten pada tab Peti mod USA.");
+            if (contentRegistry_.isEmpty()) contentPreview_->setPlainText("Belum ada konten. Pasang dan aktifkan mod melalui tab Peti mod untuk melihat pratinjaunya.");
         } catch (const std::exception &e) {
             contentRegistry_ = {};
             contentPreview_->setPlainText(QString::fromUtf8(e.what()));
@@ -217,12 +215,22 @@ private:
             auto *item = new QListWidgetItem(QString("[%1] %2 — %3").arg(mod.enabled ? "ON" : "OFF", mod.name, mod.version), mods_);
             item->setData(Qt::UserRole, mod.id);
             item->setData(Qt::UserRole + 1, mod.enabled);
-            item->setToolTip(mod.id);
+            item->setToolTip(mod.error.isEmpty() ? mod.id : mod.id + "\n" + mod.error);
             if (mod.id == selected) mods_->setCurrentItem(item);
         }
-        const auto conflicts = library_.conflicts();
-        conflicts_->setPlainText(conflicts.isEmpty() ? "Tidak ada konflik mod aktif." : conflicts.join('\n'));
-        status_->setText((library_.hasGame() ? "Executable USA terverifikasi • " : "Belum ada ROM • ") + library_.root());
+        const auto conflicts = library_.status().value("ok").toBool() ? library_.conflicts() : QStringList();
+        const auto state = library_.status();
+        QStringList loaded;
+        for (const auto &id : state.value("loaded").toArray()) loaded.append(id.toString());
+        QString report = "Urutan efektif: " + loaded.join(" → ") + "\n";
+        report += conflicts.isEmpty() ? "Tidak ada konflik teks aktif." : conflicts.join('\n');
+        if (!state.value("report").toString().isEmpty()) report += "\n" + state.value("report").toString();
+        for (const auto &error : state.value("nativeErrors").toArray()) report += "\nNative: " + error.toString();
+        conflicts_->setPlainText(report);
+        status_->setText((library_.hasGame() ? "Executable USA terverifikasi • " : "Belum ada ROM • ") + library_.root()
+            + QString(" • Mod native: %1 (%2 teks, %3 field item)")
+                .arg(state.value("nativeReady").toBool() ? "didukung" : "ada hambatan")
+                .arg(state.value("nativeTextCount").toInt()).arg(state.value("nativeItemPatchCount").toInt()));
         updatePreview();
         refreshContent();
     }
@@ -277,7 +285,7 @@ int main(int argc, char **argv) {
         parser.addOption({name, QString("%1 value").arg(name), "value"});
     parser.addOption({"status", "Print library status as JSON."});
     parser.addOption({"content", "Print enabled mod content registry; not bound to gameplay."});
-    parser.addOption({"v2-status", "Print resolved schema 2 profile and authoring registry as JSON."});
+    parser.addOption({"v2-status", "Compatibility alias for shared mod/profile inspection as JSON."});
     parser.addOption({"catalog-list", "Print detected ROM variants, without claiming native compatibility."});
     parser.addOption({"smoke-test", "Construct the native launcher and exit."});
     parser.process(*app);
@@ -307,7 +315,7 @@ int main(int argc, char **argv) {
         else if (parser.isSet("remove")) result = {{"recoveryDirectory", library.removeMod(parser.value("remove"))}};
         else if (parser.isSet("status")) result = library.status();
         else if (parser.isSet("content")) result = library.content();
-        else if (parser.isSet("native-export")) result = {{"directory", nature::exportNativeTextMods(library, parser.value("native-export"), library.root() + "/native-mods")}};
+        else if (parser.isSet("native-export")) result = {{"directory", nature::exportNativeMods(library, parser.value("native-export"), library.root() + "/native-mods")}};
         else if (parser.isSet("text")) {
             QString provider;
             auto text = library.text(parser.value("text"), &provider);

@@ -1,10 +1,14 @@
 # Menghubungkan core hasil port ke modcore
 
 Titik di bawah ini dibaca dari `hmbtn-decomp` yang diunggah (bukan ditebak). Semuanya belum
-dipasang pada gameplay: ini daftar kerja untuk core PC. Teks schema 2 sudah diteruskan
-launcher lewat exporter native yang ada; tabel dan hook gameplay di bawah masih belum disambungkan.
+dipasang pada gameplay: ini daftar kerja untuk core PC. Teks serta empat field item retail sudah diteruskan lewat exporter native.
+Pengembangan tabel untuk entitas baru dan hook gameplay di bawah masih belum disambungkan.
 
 ## Tabel dan akses data
+
+Empat field pada item retail kini sudah memakai adapter exporter RAM; lihat
+[mod item native](NATIVE_ITEM_MODS.md). Alokasi tabel untuk item baru dan hook
+gameplay pada daftar di bawah masih merupakan pekerjaan port berikutnya.
 
 | Kebutuhan | Lokasi decomp | Pekerjaan |
 | --- | --- | --- |

@@ -13,7 +13,8 @@ struct ModcoreMod {
     QString error; // A broken installed package remains visible and removable.
 };
 
-// Schema 2 authoring workspace; profiles and ID state are separate from BTN saves.
+// Shared package/profile backend for the launcher; modcore stays an internal engine.
+// Authoring ID state is separate from BTN gameplay saves.
 class ModcoreLibrary {
 public:
     explicit ModcoreLibrary(QString root);
@@ -24,9 +25,13 @@ public:
     void moveMod(const QString &id, int delta);
     QString removeMod(const QString &id);
     // {ok, contentGameplayReady:false, enabled:[], loaded:[], errors:[],
+    //  nativeReady,nativeErrors,nativeTextCount,nativeItemPatchCount,
     //  report:string, records:{id:{type,name,data,handle,owner}}}.
     QJsonObject inspect() const;
-    // Merge active text-only packs in resolved order. Unsupported gameplay data fails.
+    // {texts:{key:string},items:[{id,handle,field,value,provider}]} after load-order resolution.
+    // Only guarded retail item properties and text overrides are supported by BTN.
+    QJsonObject nativePlan() const;
+    // Compatibility accessor for the text portion; unsupported native data still fails.
     QJsonObject nativeTexts() const;
 
 private:

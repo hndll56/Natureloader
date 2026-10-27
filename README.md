@@ -44,11 +44,12 @@ Data ROM tetap di direktori data lokal. Profil dipisahkan per hash ROM agar mod 
 
 ## Status modding
 
-Tabel ini menjelaskan dukungan launcher dan runtime BTN saat ini. Modcore v2 terpisah dijelaskan setelah tabel.
+Semua paket dikelola lewat satu tab **Peti mod**, satu daftar, dan satu profil. Modcore menjadi engine internal untuk resolver, registry, serta validasi.
 
 | Jenis perubahan | Status |
 | --- | --- |
 | Teks UI tertentu | Bisa diterapkan ke RAM runtime native USA yang didukung; glyph dan kapasitas masih mengikuti batas retail. |
+| Harga beli/jual, stamina, fatigue item retail | `$patch` schema 2 diekspor ke tabel item RAM native USA yang terverifikasi. |
 | Sprite HD / penggantian sprite | Belum terhubung ke renderer gameplay. |
 | Tema atau layout UI | Belum diterapkan ke UI game. |
 | Item, alat, NPC, lokasi, bangunan, jadwal, cerita | Bisa disimpan dan diperiksa sebagai registry JSON; belum memengaruhi gameplay. |
@@ -57,34 +58,34 @@ Tabel ini menjelaskan dukungan launcher dan runtime BTN saat ini. Modcore v2 ter
 
 Jadi, registry konten **belum** berarti konten baru bisa dimainkan. Lihat [kemajuan port](docs/PORTING.md), [status native](docs/NATIVE_PROGRESS.md), dan [format konten eksperimental](docs/MOD_CONTENT.md) untuk detail dan batas yang diketahui.
 
-## Fondasi modding v2 eksperimental
+## Modloader yang terintegrasi
 
-Paket lokal `Natureloader-v2-modcore.zip` menyediakan fondasi tambahan yang kini dibangun sebagai library `nature_modcore` dan CLI `naturemod`. Modul ini mencakup resolver dependensi/versi, registry ID, aset dan override melalui VFS, hook dan script deklaratif, ekstensi data save, serta C ABI untuk disambungkan ke core game.
+Launcher menerima paket schema 1 dan schema 2 lewat tombol **Pasang mod ZIP** pada **Peti mod**. Keduanya memakai folder `mods/`, profil `profile.json`, urutan efektif, serta jalur ekspor native yang sama. Resolver modcore memeriksa versi, dependensi, konflik, dan urutan; penampil teks serta runtime mengikuti hasil resolver tersebut.
 
-**Tab Modcore v2 kini memakai library ini** untuk pemasangan ZIP, aktivasi, validasi dependensi, urutan efektif, dan pemeriksaan registry. Profil v2 menyimpan pemetaan ID authoring secara persisten. Mod teks v2 memakai jalur ekspor RAM native yang sama dengan mod teks lama. Contoh item, NPC, area, toko, dan sprite HD di `examples/v2/` masih membuktikan kontrak lewat core tiruan; file map contoh adalah placeholder. Konten tersebut belum bisa dimainkan di BTN.
+Schema 1 tetap kompatibel untuk mod teks dan pratinjau konten lama. Schema 2 menyediakan definisi konten bertipe, aset, hook, script deklaratif, dan dependensi. Konten schema 1 dipertahankan persis sebagai metadata lama; referensi bertipe lintas mod memerlukan konten schema 2.
 
-Untuk memeriksa mod schema 2 tanpa Qt, ROM, atau runtime game:
+Bagian yang sudah terhubung ke native adalah teks UI dan empat field item yang sudah ada: `buy_price`, `sell_price`, `stamina`, dan `fatigue`. Contoh item/NPC/area baru di `examples/v2/` masih untuk authoring dan core tiruan. Map contoh adalah placeholder. Hook gameplay, sprite HD, dan penambahan entitas belum terhubung ke BTN.
+
+Contoh balancing item:
 
 ```sh
-cmake -S . -B build-modcore -DNATURE_BUILD_LAUNCHER=OFF -DCMAKE_BUILD_TYPE=Debug
+cmake -E chdir examples/native-balance-v2 cmake -E tar cf ../../build/native-balance-v2.zip --format=zip mod.json
+./build/natureloader --data local-data --install build/native-balance-v2.zip
+./build/natureloader --data local-data --enable native-balance-v2
+./build/natureloader --data local-data --status
+```
+
+Contoh ini mengubah nilai item retail lewat snapshot RAM, tanpa menulis ulang ROM. Lihat [mod item native](docs/NATIVE_ITEM_MODS.md), [API mod](docs/MOD_API.md), dan [arsitektur internal](docs/ARCHITECTURE_V2.md).
+
+Folder lama `mods-v2/` dan `profile-v2.json` digabung saat pertama dibuka. Profil sumber dicadangkan, paket v2 asli dipertahankan, dan ID authoring tetap disimpan. Lihat [migrasi profil](docs/MOD_MIGRATION.md) untuk lokasi cadangan dan pemulihan.
+
+Alat authoring tanpa Qt tetap tersedia:
+
+```sh
+cmake -S . -B build-modcore -DNATURE_BUILD_LAUNCHER=OFF
 cmake --build build-modcore --parallel
 ./build-modcore/naturemod check examples/v2
-./build-modcore/naturemod list examples/v2
-ctest --test-dir build-modcore --output-on-failure
 ```
-
-Lihat [API mod v2](docs/MOD_API.md), [arsitektur v2](docs/ARCHITECTURE_V2.md), dan [titik integrasi decomp](docs/DECOMP_INTEGRATION.md). ABI dan format masih eksperimental. Rentang ID beberapa tipe masih perkiraan dan perlu disesuaikan dengan gameplay asli.
-
-Contoh teks UI v2 yang memakai jalur native:
-
-```sh
-cmake -E chdir examples/native-ui-v2 cmake -E tar cf ../../build/native-ui-v2.zip --format=zip mod.json
-./build/natureloader --data local-data --v2-install build/native-ui-v2.zip
-./build/natureloader --data local-data --v2-enable native-ui-v2
-./build/natureloader --data local-data --v2-status
-```
-
-Pasang ZIP schema 2 lewat tab **Modcore v2**. Mod yang membutuhkan dependensi baru dapat dipasang nonaktif; aktivasi ditolak sampai dependensi dan seluruh paket valid. Mod konten/script/aset aktif masih memblokir boot BTN agar fitur yang belum didukung tidak diabaikan. Key teks yang muncul pada profil v1 dan v2 sekaligus harus diselesaikan dengan menonaktifkan salah satu mod.
 
 ## Memasang mod
 
@@ -165,6 +166,8 @@ Impor disc USA milik sendiri di **Koleksi ROM**, pilih versi tersebut, lalu teka
 
 - [Membuat mod](docs/MEMBUAT_MOD.md) — paket teks dan alur instalasi.
 - [Konten mod](docs/MOD_CONTENT.md) — schema registry eksperimental dan keterbatasannya.
+- [Mod item native](docs/NATIVE_ITEM_MODS.md) — field retail yang sudah dapat diekspor.
+- [Migrasi profil](docs/MOD_MIGRATION.md) — penggabungan data lama dan cadangannya.
 - [API mod v2](docs/MOD_API.md) — format folder mod dan CLI pemeriksa.
 - [Arsitektur v2](docs/ARCHITECTURE_V2.md) — registry, dependensi, VFS, hook, dan save.
 - [Integrasi decomp](docs/DECOMP_INTEGRATION.md) — sambungan yang masih perlu dikerjakan pada core game.

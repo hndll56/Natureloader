@@ -58,6 +58,48 @@ bool inList(const std::string& v, const char* list) {
     std::string l = std::string(",") + list + ",";
     return l.find("," + v + ",") != std::string::npos;
 }
+// Validate value shapes before a patch can mutate the registry. Referential
+// checks remain in validate(), after every mod has registered its records.
+std::string fieldShapeError(const F& f, const Json& v) {
+    const std::string field = std::string("'") + f.name + "'";
+    switch (f.type) {
+        case T::Str:
+            if (!v.isString() || v.asString().empty()) return field + " harus string";
+            break;
+        case T::Loc: {
+            bool ok = v.isString() && !v.asString().empty();
+            if (v.isObject() && v.size() > 0) {
+                ok = true;
+                for (const auto& e : v.members()) if (!e.second.isString()) ok = false;
+            }
+            if (!ok) return field + " harus string atau {locale: string}";
+            break;
+        }
+        case T::Int:
+            if (!v.isInt() || v.asInt() < f.lo || v.asInt() > f.hi)
+                return field + " harus bilangan bulat " + std::to_string(f.lo) + ".." + std::to_string(f.hi) +
+                       " (batas tipe data game)";
+            break;
+        case T::Bool: if (!v.isBool()) return field + " harus boolean"; break;
+        case T::Ref: if (!v.isString()) return field + " harus string id"; break;
+        case T::RefList:
+            if (!v.isArray() || v.size() == 0) return field + " harus array id tidak kosong";
+            for (const auto& e : v.items()) if (!e.isString()) return field + " harus string id";
+            break;
+        case T::Asset: if (!v.isString()) return field + " harus string id aset"; break;
+        case T::Enum:
+            if (!v.isString() || !inList(v.asString(), f.choices))
+                return field + " harus salah satu dari: " + f.choices;
+            break;
+        case T::Obj: if (!v.isObject()) return field + " harus objek"; break;
+        case T::Arr:
+            if (!v.isArray()) return field + " harus array";
+            if (f.choices) for (const auto& e : v.items())
+                if (!e.isString() || !inList(e.asString(), f.choices)) return field + " berisi nilai tidak valid";
+            break;
+    }
+    return "";
+}
 }  // namespace
 
 bool Registry::isKind(const std::string& k) { return specFor(k) != nullptr || k == "base"; }
@@ -176,9 +218,11 @@ bool Registry::patch(const std::string& owner, const std::string& target, const 
     if (it->second.owner == owner) { err = "mod tidak perlu mem-patch rekamannya sendiri: " + target; return false; }
     const KindSpec* sp = specFor(it->second.kind);
     for (const auto& kv : fields.members()) {
-        bool ok = false;
-        for (const auto& f : sp->fields) if (kv.first == f.name) ok = true;
-        if (!ok) { err = "patch " + target + ": field tidak dikenal '" + kv.first + "'"; return false; }
+        const F* field = nullptr;
+        for (const auto& f : sp->fields) if (kv.first == f.name) field = &f;
+        if (!field) { err = "patch " + target + ": field tidak dikenal '" + kv.first + "'"; return false; }
+        const std::string shape = fieldShapeError(*field, kv.second);
+        if (!shape.empty()) { err = "patch " + target + ": " + shape; return false; }
     }
     for (const auto& kv : fields.members()) {
         std::string key = target + "#" + kv.first;
@@ -206,14 +250,19 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
     static const std::set<std::string> none;
     for (const auto& kv : records_) {
         const Record& r = kv.second;
-        if (r.owner == "base") continue;
         const KindSpec* sp = specFor(r.kind);
-        auto ai = allowedRefs.find(r.owner);
-        const std::set<std::string>& allowed = ai == allowedRefs.end() ? none : ai->second;
-        auto E = [&](const std::string& m) { errs[r.owner].push_back(r.id + ": " + m); };
+        std::string owner = r.owner;
+        const std::set<std::string>* allowed = &none;
+        auto selectField = [&](const std::string& field) {
+            const auto patched = fieldOwner_.find(r.id + "#" + field);
+            owner = patched == fieldOwner_.end() ? r.owner : patched->second;
+            const auto ai = allowedRefs.find(owner);
+            allowed = ai == allowedRefs.end() ? &none : &ai->second;
+        };
+        auto E = [&](const std::string& m) { errs[owner].push_back(r.id + ": " + m); };
         auto checkRef = [&](const std::string& field, const Json& v, const char* kind) {
             if (!v.isString()) { E("'" + field + "' harus string id"); return; }
-            std::string why = needsRefAllowed(r.owner, v.asString(), allowed);
+            std::string why = needsRefAllowed(owner, v.asString(), *allowed);
             if (!why.empty()) { E(field + ": " + why); return; }
             const Record* t = find(v.asString());
             if (!t) { E(field + ": tujuan tidak ada: " + v.asString()); return; }
@@ -224,40 +273,20 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
             size_t c = v.asString().find(':');
             if (c == std::string::npos) { E("'" + field + "' harus berbentuk mod:path"); return; }
             std::string m2 = v.asString().substr(0, c);
-            std::string why = needsRefAllowed(r.owner, m2 + ":x", allowed);
+            std::string why = needsRefAllowed(owner, m2 + ":x", *allowed);
             if (!why.empty()) { E(field + ": " + why); return; }
-            assetRefs_.push_back({r.owner, r.id, field, v.asString()});
+            assetRefs_.push_back({owner, r.id, field, v.asString()});
         };
         for (const auto& f : sp->fields) {
+            selectField(f.name);
             const Json* v = r.data.find(f.name);
-            if (!v) { if (f.required) E(std::string("field wajib '") + f.name + "' hilang"); continue; }
-            switch (f.type) {
-                case T::Str: if (!v->isString() || v->asString().empty()) E(std::string("'") + f.name + "' harus string"); break;
-                case T::Loc: {
-                    bool ok = v->isString() && !v->asString().empty();
-                    if (v->isObject() && v->size() > 0) { ok = true; for (const auto& e : v->members()) if (!e.second.isString()) ok = false; }
-                    if (!ok) E(std::string("'") + f.name + "' harus string atau {locale: string}");
-                    break;
-                }
-                case T::Int:
-                    if (!v->isInt() || v->asInt() < f.lo || v->asInt() > f.hi)
-                        E(std::string("'") + f.name + "' harus bilangan bulat " + std::to_string(f.lo) + ".." + std::to_string(f.hi) +
-                          " (batas tipe data game)");
-                    break;
-                case T::Bool: if (!v->isBool()) E(std::string("'") + f.name + "' harus boolean"); break;
-                case T::Ref: checkRef(f.name, *v, f.refKind); break;
-                case T::RefList:
-                    if (!v->isArray() || v->size() == 0) E(std::string("'") + f.name + "' harus array id tidak kosong");
-                    else for (const auto& e : v->items()) checkRef(f.name, e, f.refKind);
-                    break;
-                case T::Asset: checkAsset(f.name, *v); break;
-                case T::Enum: if (!v->isString() || !inList(v->asString(), f.choices)) E(std::string("'") + f.name + "' harus salah satu dari: " + f.choices); break;
-                case T::Obj: if (!v->isObject()) E(std::string("'") + f.name + "' harus objek"); break;
-                case T::Arr:
-                    if (!v->isArray()) { E(std::string("'") + f.name + "' harus array"); break; }
-                    if (f.choices) for (const auto& e : v->items()) if (!e.isString() || !inList(e.asString(), f.choices)) E(std::string("'") + f.name + "' berisi nilai tidak valid");
-                    break;
-            }
+            // Base records contain only supplied overrides, not complete retail rows.
+            if (!v) { if (f.required && r.owner != "base") E(std::string("field wajib '") + f.name + "' hilang"); continue; }
+            const auto shape = fieldShapeError(f, *v);
+            if (!shape.empty()) { E(shape); continue; }
+            if (f.type == T::Ref) checkRef(f.name, *v, f.refKind);
+            else if (f.type == T::RefList) for (const auto& e : v->items()) checkRef(f.name, e, f.refKind);
+            else if (f.type == T::Asset) checkAsset(f.name, *v);
         }
         if (warnings)
             for (const auto& m : r.data.members()) {
@@ -267,6 +296,7 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
             }
         // hooks: only known fields, handler ids must be mod:name
         if (const Json* h = r.data.find("hooks")) if (h->isObject()) {
+            selectField("hooks");
             const auto& hf = hookFields(r.kind);
             for (const auto& e : h->members()) {
                 if (!hf.count(e.first)) E("hook tidak dikenal untuk " + r.kind + ": " + e.first);
@@ -275,11 +305,13 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
         }
         // nested structures
         if (r.kind == "area") {
+            selectField("entrances");
             std::set<std::string> ent;
             for (const auto& e : r.data["entrances"].items()) {
                 if (!validLocalId(e["id"].asString()) || !e["x"].isNumber() || !e["y"].isNumber()) E("entrance butuh id,x,y");
                 else if (!ent.insert(e["id"].asString()).second) E("entrance ganda: " + e["id"].asString());
             }
+            selectField("exits");
             for (const auto& e : r.data["exits"].items()) {
                 if (e.has("to_section")) {
                     // exit into a retail area, addressed by its section number (no stable name exists yet)
@@ -297,12 +329,15 @@ std::map<std::string, std::vector<std::string>> Registry::validate(
                 if (e["rect"].size() != 4) E("exit butuh rect [x,y,w,h]");
             }
         }
-        if (r.kind == "shop")
+        if (r.kind == "shop") {
+            selectField("stock");
             for (const auto& e : r.data["stock"].items()) {
                 checkRef("stock.item", e["item"], "item");
                 if (e.has("price") && (!e["price"].isInt() || e["price"].asInt() < 0 || e["price"].asInt() > 32767)) E("stock.price di luar 0..32767");
             }
+        }
         if (r.kind == "asset_override") {
+            selectField("target");
             const std::string& t = r.data["target"].asString();
             if (t.compare(0, 9, "base:tex/") != 0 && t.compare(0, 11, "base:sound/") != 0 && t.compare(0, 10, "base:font/") != 0)
                 E("target override harus berawalan base:tex/, base:sound/ atau base:font/");

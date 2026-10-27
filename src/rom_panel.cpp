@@ -121,7 +121,7 @@ void RomPanel::showSelection() {
         if (canLaunch(m)) {
             details_->setPlainText(details_->toPlainText().replace("Status: tersimpan; gameplay native belum tersedia.",
                 "Status: boot/title native teruji pada Linux; gameplay lengkap masih eksperimental."));
-            play_->setToolTip("Menjalankan runtime native riset lokal. Mod teks aktif diterapkan saat boot; hanya glyph dan kapasitas retail yang didukung.");
+            play_->setToolTip("Menjalankan runtime native riset lokal. Mod teks dan empat field item retail yang didukung diterapkan saat boot.");
         }
     } catch (const std::exception &e) { details_->setPlainText(QString::fromUtf8(e.what())); }
 }
@@ -134,7 +134,7 @@ void RomPanel::launchNative() {
         if (!catalog_.verify(id)) throw std::runtime_error("Verifikasi ROM gagal; jalankan impor ulang dari sumber asli.");
         const auto state = QDir(metadata.value("profilePath").toString()).filePath("native-saves");
         if (!QDir().mkpath(state)) throw std::runtime_error("Folder save native tidak dapat dibuat.");
-        const auto modRoot = nature::exportNativeTextMods(nature::Library(dataRoot_), metadata.value("exePath").toString(), state + "/mods");
+        const auto modRoot = nature::exportNativeMods(nature::Library(dataRoot_), metadata.value("exePath").toString(), state + "/mods");
         game_ = new QProcess(this);
         auto environment = QProcessEnvironment::systemEnvironment();
         environment.insert("NATURE_MOD_DIRECTORY", modRoot);
@@ -155,7 +155,7 @@ void RomPanel::launchNative() {
             }
         });
         play_->setEnabled(false);
-        status_->setText("Menjalankan port native eksperimental. Mod teks aktif diterapkan saat boot.");
+        status_->setText("Menjalankan port native eksperimental. Rencana mod aktif diterapkan saat boot.");
         game_->start(nativeBinary(), {"--no-launcher", "--game", nativeRoot() + "/game.toml",
             "--disc", metadata.value("cuePath").toString().isEmpty() ? metadata.value("imagePath").toString() : metadata.value("cuePath").toString(),
             "--memcard-dir", state});

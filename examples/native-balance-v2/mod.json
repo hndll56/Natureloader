@@ -1,0 +1,15 @@
+{
+  "schema": 2,
+  "id": "native-balance-v2",
+  "name": "NatureLoader: Balancing Item USA",
+  "version": "1.0.0",
+  "game": "SLUS_011.15",
+  "api": ">=1.0 <2",
+  "content": {
+    "$patch": {
+      "base:turnip": {"sell_price": 120, "stamina": 6, "fatigue": -2},
+      "base:turnip-seeds": {"buy_price": 80},
+      "base:sickle": {"stamina": -1}
+    }
+  }
+}

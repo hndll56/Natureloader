@@ -14,6 +14,8 @@ struct Mod {
     QJsonObject texts;
     QJsonObject content;
     bool enabled = false;
+    int schema = 1;
+    QString error;
 };
 
 // Read-only access to a single-track Mode 2/2352 disc or 2048-byte ISO.
@@ -33,6 +35,8 @@ void writeFile(const QString &path, const QByteArray &bytes);
 QJsonObject readObject(const QString &path);
 QString safePath(const QString &name);
 QJsonArray textLayout();
+// Preserve the legacy manifest contract while the shared loader handles packages.
+Mod validateLegacyMod(const QJsonObject &manifest, const QString &directory);
 QString decodeText(const QByteArray &bytes);
 
 class Library {
@@ -48,13 +52,12 @@ public:
     // Move an installed mod to local recovery storage and remove it from the profile.
     QString removeMod(const QString &id);
     QString text(const QString &key, QString *provider = nullptr) const;
-    // Authored content from enabled mods; not yet bound to native gameplay.
+    // Resolved content preview; new entities are not yet bound to native gameplay.
     QJsonObject content() const;
     QStringList conflicts() const;
     QJsonObject status() const;
 private:
     QString root_;
-    QStringList enabledIds() const;
-    void saveEnabled(const QStringList &ids);
+    QList<Mod> resolvedMods() const;
 };
 }

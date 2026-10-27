@@ -1,9 +1,9 @@
 # Membuat mod untuk NatureLoader
 
-Panduan di bawah membahas format schema 1 pada tab **Peti mod USA**. Untuk
+Panduan di bawah membahas format schema 1 pada tab **Peti mod**. Untuk
 paket schema 2 dengan dependensi, aset, script deklaratif, dan registry lebih
-lengkap, gunakan tab **Modcore v2** dan [panduan API v2](MOD_API.md). Teks UI v2
-sudah memakai jalur exporter native; konten gameplay baru tetap belum terhubung.
+lengkap, gunakan tab **Peti mod** yang sama dan [panduan API v2](MOD_API.md). Teks UI v2
+sudah memakai jalur exporter native. Schema 2 juga mendukung [patch nilai item retail](NATIVE_ITEM_MODS.md); entitas baru tetap belum terhubung.
 
 NatureLoader saat ini punya dua jalur mod:
 
@@ -67,12 +67,12 @@ Pastikan isi ZIP menampilkan `mod.json` di tingkat teratas, bukan `native-ui/mod
 ## Pasang dan coba
 
 1. Siapkan checkout runtime sesuai bagian [Menjalankan runtime native lokal](../README.md#menjalankan-runtime-native-lokal).
-2. Buka **Peti mod USA**, pilih **Pasang mod ZIP**, lalu pilih paket.
+2. Buka **Peti mod**, pilih **Pasang mod ZIP**, lalu pilih paket.
 3. Pilih mod dan klik **Aktif / nonaktif** sampai statusnya `ON`.
 4. Pada **Koleksi ROM**, pilih disc USA yang didukung dan klik **Jalankan native (uji)**.
 5. Untuk contoh `native-ui`, pilih **Continue** dan lanjut ke layar pemilihan Memory Card. Prompt akan berubah.
 
-Mod teks yang dimuat ke game membutuhkan runtime lokal tersebut. Kalau hanya ingin melihat atau mengedit teks melalui penampil launcher, impor data USA pada tab **Peti mod USA**; runtime native tidak diperlukan.
+Mod teks yang dimuat ke game membutuhkan runtime lokal tersebut. Kalau hanya ingin melihat atau mengedit teks melalui penampil launcher, impor data USA pada tab **Peti mod**; runtime native tidak diperlukan.
 6. Kembali ke launcher, nonaktifkan mod, lalu jalankan ulang. Prompt asli kembali.
 
 Mod baru selalu nonaktif saat dipasang. Mod aktif diproses berurutan; mod paling bawah menang saat beberapa mod mengganti kunci teks sama. Konflik ditampilkan di tab mod.
@@ -102,7 +102,7 @@ Manifest boleh memakai `content` sebagai ganti atau bersama `texts`:
 
 ID record harus berbentuk `<id-mod>:<id-lokal>`. Tipe terdaftar: `item`, `tool`, `npc`, `location`, `dialog`, `schedule`, `story`, `building`, `sprite`, `ui_theme`, dan `rules`. Maksimal 1024 record per mod dan 64 KiB per record.
 
-Pasang dan aktifkan lewat **Peti mod USA**. Tab **Konten mod** menampilkan record serta JSON yang disimpan. Saat ini `sellPrice` hanya data; ia tidak menambahkan item ke game. `ui_theme` juga belum mengubah layar. Native launch menolak mod konten aktif agar hasilnya tidak menyesatkan.
+Pasang dan aktifkan lewat **Peti mod**. Tab **Konten mod** menampilkan record serta JSON yang disimpan. Saat ini `sellPrice` hanya data; ia tidak menambahkan item ke game. `ui_theme` juga belum mengubah layar. Native launch menolak mod konten aktif agar hasilnya tidak menyesatkan.
 
 ## Kekurangan dan batas saat ini
 

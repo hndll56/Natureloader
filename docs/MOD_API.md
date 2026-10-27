@@ -1,7 +1,7 @@
 # Referensi pembuatan mod (schema 2)
 
 Schema 2 masih eksperimental. Gunakan folder lewat CLI `naturemod` atau ZIP lewat tab
-**Modcore v2** di launcher. `mod.json` harus berada di akar. Contoh authoring: `examples/v2/`;
+**Peti mod** di launcher. `mod.json` harus berada di akar. Contoh authoring: `examples/v2/`;
 contoh teks yang memakai jalur native: `examples/native-ui-v2/`.
 
 ```sh
@@ -14,34 +14,41 @@ ctest --test-dir build-modcore --output-on-failure
 
 Katalog ID authoring dibundel di CLI; `--catalog <file>` menggantinya untuk riset.
 Exit code: `0` semua mod valid, `1` ada mod ditolak, `2` penggunaan/input alat salah.
-Kelulusan pemeriksaan tidak berarti konten sudah tampil di game. Tab lama memakai schema 1;
-tab Modcore v2 memiliki profil sendiri dan mengekspor mod teks ke jalur native.
-Adapter schema 1 di modcore belum menggantikan loader teks lama.
+Kelulusan pemeriksaan tidak berarti konten baru sudah tampil di game. Launcher memakai satu
+backend modcore untuk kedua format, sementara kontrak konten schema 1 lama tetap dipertahankan.
 
 ## Instalasi dan profil launcher
 
-ZIP schema 2 dapat memuat subfolder konten/script/aset. Batasnya 4096 anggota, 32 MiB per file,
-64 MiB total hasil ekstraksi, dan 1 MiB untuk `mod.json`. Symlink, hardlink, path traversal,
-serta nama yang bertabrakan setelah case folding ditolak.
+Semua mod dipasang lewat **Peti mod** atau `--install`. ZIP schema 2 dapat memuat subfolder
+konten/script/aset. Batasnya 4096 anggota, 32 MiB per file, 64 MiB total hasil ekstraksi,
+dan 1 MiB untuk `mod.json`. Symlink, hardlink, traversal, serta tabrakan nama ditolak.
+Schema 1 mempertahankan batas paket lamanya: hanya `mod.json`, `README.md`, dan `LICENSE`.
 
-Paket dipasang nonaktif di `mods-v2/<id>/`. Aktivasi dan pengurutan memvalidasi seluruh profil;
-jika gagal, profil lama tetap dipakai. Dependensi tidak diunduh otomatis. Nonaktifkan mod
-yang bergantung terlebih dahulu sebelum melepas dependensinya. File yang dilepas dipindahkan
-ke `removed-mods-v2/`. `profile-v2.json` menyimpan urutan pilihan dan `authoringSave` untuk
-ID authoring yang persisten; ini bukan save gameplay BTN.
+Paket baru dipasang nonaktif di `mods/<id>/`. Aktivasi dan pengurutan memvalidasi seluruh profil;
+kegagalan mempertahankan profil sebelumnya. Dependensi tidak diunduh otomatis. Nonaktifkan
+mod yang bergantung sebelum melepas dependensinya. Pelepasan memindahkan paket ke
+`removed-mods/`. `profile.json` menyimpan urutan dan `authoringSave` untuk ID authoring;
+ini bukan save gameplay BTN. Folder v2 lama dimigrasikan dengan cadangan; lihat
+[catatan migrasi](MOD_MIGRATION.md).
 
 ```sh
-./build/natureloader --data local-data --v2-install mod-ku.zip
-./build/natureloader --data local-data --v2-enable mod-ku
-./build/natureloader --data local-data --v2-status
-./build/natureloader --data local-data --v2-disable mod-ku
-./build/natureloader --data local-data --v2-remove mod-ku
+./build/natureloader --data local-data --install mod-ku.zip
+./build/natureloader --data local-data --enable mod-ku
+./build/natureloader --data local-data --status
+./build/natureloader --data local-data --content
+./build/natureloader --data local-data --disable mod-ku
+./build/natureloader --data local-data --remove mod-ku
 ```
 
-Boot native saat ini hanya menerima teks v2 yang cocok dengan key/glyph/kapasitas retail.
-Konten, script, hook, plugin, dan override aset aktif ditolak karena belum terhubung ke BTN.
-Key teks yang dipakai profil v1 dan v2 sekaligus juga ditolak. Native plugin tidak mendapat
-persetujuan otomatis dari launcher. Tidak ada sandbox untuk kode native.
+Flag `--v2-*` lama tetap menjadi alias ke backend dan profil yang sama.
+Teks dari kedua format mengikuti satu urutan resolver, termasuk saat terjadi konflik.
+`nativeReady` dan `nativeErrors` melaporkan kecocokan fitur serta glyph/kapasitas teks;
+verifikasi executable tetap dilakukan saat ekspor.
+
+Native saat ini menerima teks retail dan [empat field item retail](NATIVE_ITEM_MODS.md).
+Entitas baru, aset, script, hook, dan plugin belum terhubung ke gameplay. Plugin native
+memerlukan persetujuan eksplisit; launcher belum menyediakan jalur persetujuan atau
+mengeksekusi plugin secara otomatis.
 
 ## mod.json
 

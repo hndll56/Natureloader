@@ -102,8 +102,9 @@ hilang tetap tersimpan; saat mod dipasang lagi, nomor dan flag pulih (diuji di `
 - `SaveExtension::baseSaveHash` belum diisi; pengikatan sidecar ke save retail masih tugas core.
 - Pembaca ZIP untuk `PackSource` belum ditulis di `modcore` (launcher sudah memakai libarchive);
   saat ini paket berupa folder (`DirPackSource`) atau memori.
-- Tab Modcore v2 menghubungkan library ke instalasi ZIP, profil, dan registry launcher.
-  Teks v2 diekspor melalui `src/native_mods.cpp`; konten gameplay masih ditolak saat boot.
+- Modcore adalah backend internal **Peti mod**, bukan modloader terpisah. Schema 1/2
+  berbagi pemasangan, profil, resolver, registry yang terlihat, dan exporter native.
+  Native mendukung teks dan empat field item retail; entitas serta hook baru masih ditolak.
   `-DNATURE_BUILD_LAUNCHER=OFF` membangun alat authoring tanpa Qt/libarchive.
 - Pengujian `fake_core` tidak membaca disc atau menjalankan gameplay BTN.
 - ABI dan format schema 2 masih eksperimental. Plugin native menjalankan kode host penuh;

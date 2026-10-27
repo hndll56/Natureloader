@@ -1,6 +1,6 @@
 # Format mod konten eksperimental
 
-Dokumen ini menjelaskan schema 1. Schema 2 tersedia melalui tab **Modcore v2**;
+Dokumen ini menjelaskan schema 1. Schema 2 tersedia melalui tab **Peti mod** yang sama;
 lihat [API v2](MOD_API.md) untuk dependensi, registry, dan profil authoring-nya.
 Kedua format masih belum menambahkan entitas baru ke gameplay BTN.
 

@@ -81,33 +81,79 @@ def main():
         run("--disable", "native-ui")
         clean = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
         assert "patch" not in tomllib.loads((clean / "packages/nature.texts/1.0.0/manifest.toml").read_text())
-        # Schema 2 uses the same verified RAM patch path, with a separate persisted profile.
+        # Both formats share one installed list, resolved order and native patch path.
         v2_manifest = {"schema": 2, "id": "native-ui-v2", "name": "UI v2", "version": "1.0.0",
                        "game": "SLUS_011.15", "api": ">=1.0 <2",
                        "texts": {"messages.selectAMemoryCardSlot": "Pilih slot\nNatureLoader v2"}}
         archive = root / "native-ui-v2.zip"
         with zipfile.ZipFile(archive, "w") as output:
             output.writestr("mod.json", json.dumps(v2_manifest))
-        run("--v2-install", str(archive))
+        run("--install", str(archive))
         assert run("--v2-status")["enabled"] == []
-        run("--v2-enable", "native-ui-v2")
+        run("--enable", "native-ui-v2")
         assert run("--v2-status")["loaded"] == ["native-ui-v2"]
         exported = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
         patch = tomllib.loads((exported / "packages/nature.texts/1.0.0/manifest.toml").read_text())["patch"][0]
         assert len(bytes.fromhex(patch["replace"])) == 54
         assert bytes.fromhex(patch["replace"])[0:2] == b"\x0f\x00"
-        # Cross-profile text conflicts are explicit; neither source is silently selected.
+        # Legacy and schema 2 text conflicts use the same ordered resolver.
         run("--enable", "native-ui")
-        run("--native-export", str(base / "SLUS_011.15"), success=False)
+        assert run("--text", "messages.selectAMemoryCardSlot")["provider"] == "native-ui"
+        run("--native-export", str(base / "SLUS_011.15"))
         run("--disable", "native-ui")
-        run("--v2-disable", "native-ui-v2")
+        assert run("--text", "messages.selectAMemoryCardSlot")["provider"] == "native-ui-v2"
+        run("--disable", "native-ui-v2")
+        clean = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
+        assert "patch" not in tomllib.loads((clean / "packages/nature.texts/1.0.0/manifest.toml").read_text())
+        # Existing retail item fields are patched in guest RAM, not on the disc.
+        balance_manifest = {
+            "schema": 2, "id": "native-balance-v2", "name": "Balance", "version": "1.0.0",
+            "game": "SLUS_011.15", "api": "^1.0",
+            "content": {"$patch": {
+                "base:turnip": {"sell_price": 120, "stamina": 6, "fatigue": -2},
+                "base:turnip-seeds": {"buy_price": 80},
+                "base:sickle": {"stamina": -1},
+            }},
+        }
+        archive = root / "native-balance-v2.zip"
+        with zipfile.ZipFile(archive, "w") as output:
+            output.writestr("mod.json", json.dumps(balance_manifest))
+        run("--install", str(archive))
+        run("--enable", "native-balance-v2")
+        status = run("--v2-status")
+        assert status["nativeReady"] and status["nativeItemPatchCount"] == 5
+        assert not status["contentGameplayReady"]  # new entities remain unavailable
+        exported = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
+        patches = tomllib.loads((exported / "packages/nature.texts/1.0.0/manifest.toml").read_text())["patch"]
+        by_address = {p["address"]: p for p in patches}
+        values = {
+            0x8004BBDE: (60, 120, 2),   # turnip sell price
+            0x8004BBEC: (3, 6, 1),     # turnip stamina
+            0x8004BBED: (-1, -2, 1),   # turnip fatigue
+            0x8004B704: (120, 80, 2),   # turnip seed buy price
+            0x8004B1EC: (-2, -1, 1),   # sickle stamina
+        }
+        assert len(patches) == len(values)
+        original_exe = (base / "SLUS_011.15").read_bytes()
+        for address, (stock, replacement, size) in values.items():
+            patch = by_address[address]
+            offset = address - 0x80010000 + 0x800
+            assert bytes.fromhex(patch["expected"]) == original_exe[offset:offset + size]
+            assert int.from_bytes(bytes.fromhex(patch["expected"]), "little", signed=True) == stock
+            assert int.from_bytes(bytes.fromhex(patch["replace"]), "little", signed=True) == replacement
+        # Supported item fields and UI text share one guarded snapshot.
+        run("--enable", "native-ui-v2")
+        mixed = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
+        assert len(tomllib.loads((mixed / "packages/nature.texts/1.0.0/manifest.toml").read_text())["patch"]) == 6
+        run("--disable", "native-ui-v2")
+        run("--disable", "native-balance-v2")
         clean = Path(run("--native-export", str(base / "SLUS_011.15"))["directory"])
         assert "patch" not in tomllib.loads((clean / "packages/nature.texts/1.0.0/manifest.toml").read_text())
         run("--import", str(rom), success=False)
         assert {path.name: digest(path) for path in base.iterdir()} == hashes_before
         assert not run("--status")["gameplayReady"]
     assert digest(rom) == original_hash, "Source ROM changed"
-    print("PASS: real ROM import, 354 texts, 32 members, schema 1/2 native text exports, conflicts, restart persistence, unchanged base and ROM SHA-256.")
+    print("PASS: real ROM import, native text/item-field exports, signed values, mixed mods, restoration, conflicts, restart persistence, unchanged base and ROM SHA-256.")
 
 
 if __name__ == "__main__":

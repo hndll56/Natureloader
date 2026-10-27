@@ -1,4 +1,5 @@
 #include "core.h"
+#include "modcore_library.h"
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFile>
@@ -123,40 +124,10 @@ QString unpackRom(const QString &zip, const QString &directory) {
     if (code != ARCHIVE_EOF || result.isEmpty()) fail("Invalid ROM ZIP or missing BIN/ISO.");
     return result;
 }
-QMap<QString, QByteArray> modFiles(const QString &zip) {
-    std::unique_ptr<archive, decltype(&archive_read_free)> a(archive_read_new(), archive_read_free);
-    archive_read_support_format_zip(a.get());
-    const auto native = zip.toStdWString();
-    if (archive_read_open_filename_w(a.get(), native.c_str(), 65536) != ARCHIVE_OK) fail("Cannot open mod ZIP.");
-    archive_entry *entry = nullptr;
-    QMap<QString, QByteArray> files;
-    QSet<QString> seen;
-    int count = 0, code;
-    qint64 total = 0;
-    while ((code = archive_read_next_header(a.get(), &entry)) == ARCHIVE_OK) {
-        if (++count > 8) fail("Mod ZIP has too many files.");
-        const QString name = safePath(QString::fromUtf8(archive_entry_pathname(entry)));
-        if (seen.contains(name.toCaseFolded())) fail("Duplicate ZIP member.");
-        seen.insert(name.toCaseFolded());
-        if (name != "mod.json" && name != "README.md" && name != "LICENSE") fail("Unsupported file in mod: " + name);
-        if (archive_entry_filetype(entry) != AE_IFREG || archive_entry_symlink(entry) || archive_entry_hardlink(entry))
-            fail("Mod ZIP members must be regular files.");
-        if (archive_entry_size(entry) < 0 || archive_entry_size(entry) > 1024 * 1024) fail("Mod file is too large.");
-        QByteArray content;
-        char buffer[16384];
-        la_ssize_t n;
-        while ((n = archive_read_data(a.get(), buffer, sizeof buffer)) > 0) {
-            total += n;
-            if (total > 2 * 1024 * 1024) fail("Mod exceeds 2 MiB limit.");
-            content.append(buffer, n);
-        }
-        if (n < 0 || content.size() != archive_entry_size(entry)) fail("Corrupt mod ZIP.");
-        files.insert(name, content);
-    }
-    if (code != ARCHIVE_EOF || files.value("mod.json").isEmpty()) fail("ZIP must contain mod.json at its root.");
-    return files;
+
 }
-}
+
+Mod validateLegacyMod(const QJsonObject &manifest, const QString &directory) { return validateMod(manifest, directory); }
 
 QByteArray readFile(const QString &path, qint64 limit) {
     QFile file(path);
@@ -274,7 +245,7 @@ QString decodeText(const QByteArray &bytes) {
 }
 
 Library::Library(QString root) : root_(QDir(root).absolutePath()) {
-    if (!QDir().mkpath(root_ + "/mods")) fail("Cannot create library directory.");
+    ModcoreLibrary backend(root_);
 }
 bool Library::hasGame() const {
     const auto path = root_ + "/base/SLUS_011.15";
@@ -340,114 +311,51 @@ QJsonObject Library::importGame(const QString &source) {
     if (!QDir().rename(staging.path(), root_ + "/base")) fail("Cannot commit game import.");
     return report;
 }
-Mod Library::installMod(const QString &zip) {
-    const auto files = modFiles(zip);
-    const auto bytes = files.value("mod.json");
-    auto mod = validateMod(objectFrom(bytes), {});
-    const auto destination = root_ + "/mods/" + mod.id;
-    if (QFileInfo::exists(destination)) fail("Mod ID already installed: " + mod.id);
-    QTemporaryDir staging(root_ + "/mods/.install-XXXXXX");
-    if (!staging.isValid()) fail("Cannot create mod staging directory.");
-    for (auto it = files.begin(); it != files.end(); ++it) writeFile(staging.path() + "/" + it.key(), it.value());
-    if (!QDir().rename(staging.path(), destination)) fail("Cannot commit mod installation.");
-    mod.directory = destination;
-    return mod;
-}
-QStringList Library::enabledIds() const {
-    if (!QFileInfo::exists(root_ + "/profile.json")) return {};
-    const auto object = readObject(root_ + "/profile.json");
-    if (object.value("schema") != QJsonValue(1) || !object.value("enabled").isArray()) fail("Invalid profile.");
-    QStringList ids;
-    for (const auto &value : object.value("enabled").toArray()) {
-        const auto id = value.toString();
-        checkId(id);
-        if (ids.contains(id) || !QFileInfo::exists(root_ + "/mods/" + id + "/mod.json")) fail("Duplicate or missing mod in profile.");
-        ids.append(id);
-    }
-    return ids;
-}
-void Library::saveEnabled(const QStringList &ids) {
-    writeObject(root_ + "/profile.json", {{"schema", 1}, {"enabled", QJsonArray::fromStringList(ids)}});
-}
-QList<Mod> Library::mods() const {
-    QList<Mod> result;
-    const auto enabled = enabledIds();
-    auto directories = QDir(root_ + "/mods").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
-    QStringList ordered = enabled;
-    for (const auto &dir : directories) if (!ordered.contains(dir)) ordered.append(dir);
-    for (const auto &id : ordered) {
-        checkId(id);
-        const auto directory = root_ + "/mods/" + id;
-        auto m = validateMod(readObject(directory + "/mod.json"), directory);
-        if (id != m.id) fail("Mod directory and manifest ID differ.");
-        m.enabled = enabled.contains(id);
-        result.append(m);
-    }
+namespace {
+Mod publicMod(const ModcoreMod &m) {
+    Mod result{m.id, m.name, m.version, m.directory, m.manifest.value("texts").toObject(),
+        m.manifest.value("schema") == QJsonValue(1) ? m.manifest.value("content").toObject() : QJsonObject(), m.enabled};
+    result.schema = m.manifest.value("schema").toInt();
+    result.error = m.error;
     return result;
 }
-void Library::setEnabled(const QString &id, bool enabled) {
-    bool found = false;
-    for (const auto &m : mods()) if (m.id == id) found = true;
-    if (!found) fail("Unknown mod: " + id);
-    auto ids = enabledIds();
-    ids.removeAll(id);
-    if (enabled) ids.append(id);
-    saveEnabled(ids);
 }
-void Library::moveMod(const QString &id, int delta) {
-    auto ids = enabledIds();
-    const auto index = ids.indexOf(id), next = index + delta;
-    if ((delta != -1 && delta != 1) || index < 0 || next < 0 || next >= ids.size()) return;
-    ids.swapItemsAt(index, next);
-    saveEnabled(ids);
+Mod Library::installMod(const QString &zip) { return publicMod(ModcoreLibrary(root_).installZip(zip)); }
+QList<Mod> Library::mods() const {
+    QList<Mod> result;
+    for (const auto &m : ModcoreLibrary(root_).mods()) result.append(publicMod(m));
+    return result;
 }
-QString Library::removeMod(const QString &id) {
-    checkId(id);
-    bool found = false;
-    for (const auto &mod : mods()) if (mod.id == id) found = true;
-    if (!found) fail("Unknown mod: " + id);
-    const auto source = root_ + "/mods/" + id;
-    const auto recovery = root_ + "/removed-mods/" + id + "-" + QUuid::createUuid().toString(QUuid::WithoutBraces);
-    if (!QDir().mkpath(root_ + "/removed-mods") || !QDir().rename(source, recovery))
-        fail("Cannot move mod into recovery storage.");
-    try {
-        // Read the profile before validating installed IDs: the directory has moved.
-        QStringList remaining;
-        const auto profile = root_ + "/profile.json";
-        if (QFileInfo::exists(profile))
-            for (const auto &value : readObject(profile).value("enabled").toArray())
-                if (value.toString() != id) remaining.append(value.toString());
-        saveEnabled(remaining);
-    } catch (...) {
-        if (!QDir().rename(recovery, source)) fail("Profile save failed and mod rollback failed; files remain in " + recovery);
-        throw;
-    }
-    return recovery;
+QList<Mod> Library::resolvedMods() const {
+    const auto report = ModcoreLibrary(root_).inspect();
+    if (!report.value("ok").toBool()) fail("Mod profile failed validation: " + report.value("report").toString());
+    QMap<QString, Mod> available;
+    for (const auto &mod : mods()) available.insert(mod.id, mod);
+    QList<Mod> result;
+    for (const auto &id : report.value("loaded").toArray()) result.append(available.value(id.toString()));
+    return result;
 }
+void Library::setEnabled(const QString &id, bool enabled) { ModcoreLibrary(root_).setEnabled(id, enabled); }
+void Library::moveMod(const QString &id, int delta) { ModcoreLibrary(root_).moveMod(id, delta); }
+QString Library::removeMod(const QString &id) { return ModcoreLibrary(root_).removeMod(id); }
 QString Library::text(const QString &key, QString *provider) const {
     if (!hasGame()) fail("Import a verified USA ROM first.");
     const auto texts = readObject(root_ + "/base/texts.json");
     if (!texts.contains(key)) fail("Unknown text key: " + key);
     auto result = texts.value(key).toString();
     if (provider) *provider = "ROM";
-    for (const auto &mod : mods()) {
-        if (mod.enabled && mod.texts.contains(key)) {
+    for (const auto &mod : resolvedMods()) {
+        if (mod.texts.contains(key)) {
             result = mod.texts.value(key).toString();
             if (provider) *provider = mod.id;
         }
     }
     return result;
 }
-QJsonObject Library::content() const {
-    QJsonObject records;
-    for (const auto &mod : mods()) if (mod.enabled)
-        for (auto it = mod.content.begin(); it != mod.content.end(); ++it)
-            records.insert(it.key(), it.value());
-    return records;
-}
+QJsonObject Library::content() const { return ModcoreLibrary(root_).inspect().value("records").toObject(); }
 QStringList Library::conflicts() const {
     QMap<QString, QStringList> owners;
-    for (const auto &mod : mods()) if (mod.enabled)
+    for (const auto &mod : resolvedMods())
         for (auto it = mod.texts.begin(); it != mod.texts.end(); ++it) owners[it.key()].append(mod.id);
     QStringList result;
     for (auto it = owners.begin(); it != owners.end(); ++it)
@@ -455,9 +363,16 @@ QStringList Library::conflicts() const {
     return result;
 }
 QJsonObject Library::status() const {
-    return {{"gameImported", hasGame()}, {"gameplayReady", false}, {"dataDirectory", root_},
-            {"contentCount", content().size()}, {"contentGameplayReady", false},
-            {"installedMods", mods().size()}, {"enabled", QJsonArray::fromStringList(enabledIds())},
-            {"conflicts", QJsonArray::fromStringList(conflicts())}};
+    auto report = ModcoreLibrary(root_).inspect();
+    const int count = report.value("records").toObject().size();
+    report.remove("records");
+    report.insert("gameImported", hasGame());
+    report.insert("gameplayReady", false);
+    report.insert("dataDirectory", root_);
+    report.insert("contentCount", count);
+    report.insert("installedMods", mods().size());
+    report.insert("conflicts", QJsonArray::fromStringList(report.value("ok").toBool() ? conflicts() : QStringList()));
+    return report;
+
 }
 }
