@@ -1,46 +1,45 @@
 # NatureLoader agent contract
 
-Dokumen ini adalah titik masuk wajib untuk AI agent yang melanjutkan proyek.
-Baca bersama `README.md`, `docs/PORTING.md`, dan `docs/NATIVE_PROGRESS.md`.
+Read this file with `README.md`, `docs/PORTING.md`, and `docs/NATIVE_PROGRESS.md` before changing the project.
 
-## Aturan utama
+## Rules
 
-- Jawab dan dokumentasikan status secara jujur. Bedakan `authoring`, `snapshot/native export`, dan `runtime gameplay`.
-- Jangan masukkan ROM, ISO, executable game, save, hasil ekstraksi, atau runtime riset ke Git.
-- Jangan mengklaim fitur playable sebelum ada uji runtime yang dapat diulang.
-- Pertahankan launcher Windows/Linux. Android tetap target berikutnya, bukan alasan memecahkan desktop.
-- Modcore adalah engine internal dari satu modloader. Jangan membuat workflow atau tab modcore terpisah.
-- Semua perubahan mod harus lewat satu storage: `mods/`, `profile.json`, resolver, dan native export.
-- Perubahan migrasi harus idempotent, atomic, dan membuat backup sebelum menulis data lama.
-- Jangan menulis ke disc sumber. Native patch harus bekerja pada snapshot atau runtime copy.
-- Setiap fitur baru harus punya validator, test, dokumentasi batasan, dan completion gate.
+- Report status honestly. Distinguish authoring, native export, and playable runtime.
+- Never commit ROMs, ISOs, game executables, saves, extracted game data, research runtimes, or build output.
+- Never claim a feature is playable without repeatable runtime evidence.
+- Preserve the Windows/Linux launcher. Android is a later target.
+- Modcore is the unified loader's internal engine, not a separate workflow or tab.
+- Use one mod storage model: `mods/`, `profile.json`, resolver, and native export.
+- Migration must be idempotent, atomic, and backed up.
+- Never write to the source disc. Native patches use a runtime copy.
+- Every feature needs validation, tests, documentation, and a completion gate.
 
-## Peta kode
+## Code map
 
-- `src/core.*`: facade launcher, paket mod schema 1/2, profile, CLI.
-- `src/modcore_library.*`: backend unified mod lifecycle dan registry.
-- `src/mod_migration.*`: migrasi `mods-v2/` dan profile lama.
-- `src/native_mods.*`: native plan/export; saat ini teks dan field item retail terbatas.
-- `src/rom_catalog.*`: import, hash, identifikasi, dan profile per ROM.
-- `src/rom_panel.*`, `src/main.cpp`: UI launcher; jangan menambah workflow kedua.
-- `modcore/`: resolver, registry, VFS, hook, script, save, plugin, C API.
-- `tests/`: unit, integration, boundary, migration, dan smoke test.
-- `examples/`: paket mod aman untuk authoring dan export.
-- `docs/`: kontrak publik, bukti runtime, batasan, dan milestone.
+- `src/core.*`: launcher facade, schema 1/2 packages, profiles, CLI.
+- `src/modcore_library.*`: unified mod lifecycle and registry.
+- `src/mod_migration.*`: migration from old profiles and `mods-v2/`.
+- `src/native_mods.*`: native plan/export; currently text and retail item fields.
+- `src/rom_catalog.*`: import, hashing, identification, per-ROM profiles.
+- `src/rom_panel.*`, `src/main.cpp`: launcher UI.
+- `modcore/`: resolver, registry, VFS, hooks, scripts, saves, plugins, C API.
+- `tests/`: unit, integration, boundary, migration, and smoke tests.
+- `examples/`: safe mod authoring and export packages.
+- `docs/`: public contracts, runtime evidence, limits, and milestones.
 
-## Alur perubahan
+## Workflow
 
-1. Baca dokumen ini dan cek `git status`.
-2. Cari implementasi yang sudah ada sebelum membuat API baru.
-3. Tetapkan slice kecil dan completion gate yang dapat diuji.
-4. Implementasikan validator sebelum consumer runtime.
-5. Tambahkan test regresi dan dokumentasikan bukti serta batasan.
-6. Jalankan build/test yang relevan.
-7. Perbarui `AGENTS.md`, `docs/AI_AGENT_GUIDE.md`, dan README bila arsitektur atau status publik berubah.
-8. Tinjau file staged. Pastikan tidak ada data game.
-9. Commit Conventional Commit. Push branch `main` memakai GitHub connector bila shell network tidak tersedia.
+1. Read this file and check `git status`.
+2. Reuse existing APIs before adding new ones.
+3. Define a small slice and testable completion gate.
+4. Validate before mutating data or calling runtime code.
+5. Add regression tests and document evidence and limits.
+6. Run relevant builds and tests.
+7. Update this file, `docs/AI_AGENT_GUIDE.md`, and README when public behavior changes.
+8. Review files before commit. Exclude all game data.
+9. Commit and push `main` through the GitHub connector when shell networking is unavailable.
 
-## Perintah Linux
+## Commands
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -50,23 +49,14 @@ cmake -S . -B build-modcore -DNATURE_BUILD_LAUNCHER=OFF
 cmake --build build-modcore --parallel
 ```
 
-Native runtime lokal memakai `NATURE_NATIVE_RUNTIME_DIRECTORY`; runtime tersebut tidak boleh dipublish.
+The local native runtime uses `NATURE_NATIVE_RUNTIME_DIRECTORY`; never publish it.
 
-## Prioritas teknis
+## Priorities
 
-Urutan kerja yang benar:
+Connect the registry to runtime; add a sandboxed hook/script VM; add entity allocation; connect assets, maps, NPCs, events, collision, and save/load; prove a native farm slice; then expand sprites, items, tools, buildings, maps, and packaging.
 
-1. Sambungkan registry ke runtime game.
-2. Implementasikan hook/script VM dengan sandbox dan failure isolation.
-3. Tambahkan allocator/registry entity baru.
-4. Sambungkan asset, map, NPC, event, collision, dan save/load.
-5. Buktikan farm slice end-to-end.
-6. Baru perluas sprite HD, item/tool/building/map baru, lalu packaging Windows/Android.
-
-Saat ini fitur playable yang terbukti hanya subset teks UI dan patch field item retail native USA. Entity baru, sprite gameplay, area, hook, script, plugin, dan save native belum terhubung.
+Currently proven native features are selected UI text and retail item field patches for USA. New entities, gameplay sprites, areas, hooks, scripts, plugins, and native saves remain unconnected.
 
 ## GitHub handoff
 
-Setelah perubahan lulus test, push commit ke `hndll56/Natureloader` branch `main`. Jika push biasa gagal karena network sandbox, gunakan GitHub connector API dengan lease pada ref terbaru. Verifikasi remote head, daftar file, dan pastikan artefak ROM/binary tidak ikut.
-
-Setiap agent yang mengubah arsitektur wajib memperbarui dokumen ini dan `docs/AI_AGENT_GUIDE.md` pada commit yang sama.
+Push to `hndll56/Natureloader`, branch `main`. Verify remote head and tree contents. Ensure no ROM or binary artifacts are included. Any architecture change must update this file and `docs/AI_AGENT_GUIDE.md` in the same commit.

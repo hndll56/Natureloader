@@ -1,64 +1,42 @@
 # NatureLoader: AI agent handoff guide
 
-Panduan ini menjelaskan cara agent baru memahami, mengubah, menguji, dan meneruskan NatureLoader tanpa mengulang investigasi lama atau membuat klaim fitur yang belum terbukti.
+Use this guide to understand, modify, test, and continue NatureLoader without repeating old investigations or making unsupported claims.
 
-## Produk
+## Product
 
-NatureLoader adalah launcher desktop dan fondasi port native Harvest Moon: Back to Nature. Pemain memasukkan disc/ROM miliknya sendiri. Launcher mengimpor dan meng-hash sumber secara read-only, menyimpan profile per ROM, lalu mengaktifkan paket mod tanpa mengubah disc asli.
+NatureLoader is a desktop launcher and native-port foundation for Harvest Moon: Back to Nature. Players provide their own disc or ROM. The launcher imports and hashes it read-only, keeps a profile per ROM, and enables mods without changing the source disc.
 
-Proyek ini bukan emulator dan belum menjadi remake penuh. Runtime native masih bertahap. Modcore adalah library internal yang dipakai unified launcher, bukan produk atau tab terpisah.
+This is not an emulator or a complete remake. The native runtime is incremental. Modcore is an internal library used by the unified launcher.
 
-## Arsitektur data
+## Architecture
 
 ```text
-ROM milik pemain (read-only)
-  -> rom_catalog + hash + profile per ROM
-  -> mods/<id>/ + profile.json
-  -> ModcoreLibrary resolver
-      -> text/native plan
-      -> content registry preview
-      -> future runtime hooks/assets/save
-  -> native runtime copy
+Player ROM (read-only) -> catalog/hash/profile
+mods/<id>/ + profile.json -> ModcoreLibrary resolver
+resolver -> native plan, content preview, future runtime hooks/assets/save
+native runtime copy
 ```
 
-Schema 1 dan schema 2 memakai installer, folder, profile, load order, conflict report, text viewer, dan native exporter yang sama. Alias CLI `--v2-*` hanya compatibility alias.
+Schema 1 and schema 2 share the installer, folders, profile, load order, conflicts, text viewer, and native exporter. `--v2-*` commands are compatibility aliases.
 
-## Batas dukungan saat ini
+## Current boundary
 
-- Native export: text UI tertentu dan `buy_price`, `sell_price`, `stamina`, `fatigue` pada 380 base item retail USA.
-- Registry authoring: item, NPC, lokasi, bangunan, alat, asset, hook, script, dan metadata dapat divalidasi/ditampilkan.
-- Belum playable: entity baru, sprite HD, area baru, building baru, tool baru, event baru, Lua, plugin gameplay, dan save extension native.
-- Boot/title/menu Memory Card pernah diuji pada runtime riset. Farm gameplay, save/reload, Windows, dan Android belum menjadi bukti release.
+- Native export: selected UI text and `buy_price`, `sell_price`, `stamina`, `fatigue` for 380 USA retail base items.
+- Authoring registry: items, NPCs, locations, buildings, tools, assets, hooks, scripts, and metadata can be validated and displayed.
+- Not playable: new entities, HD gameplay sprites, new areas/buildings/tools/events, Lua, gameplay plugins, and native save extensions.
+- Boot/title/Memory Card menu were tested on the research runtime. Farm gameplay, save/reload, Windows, and Android are not release evidence.
 
-Jika pekerjaan menyentuh area belum terhubung, implementasikan fail-closed: registry boleh menyimpan data, tetapi exporter harus menolak dengan error jelas sampai runtime consumer tersedia.
+Unconnected content must fail closed: registry storage is allowed, but native export must reject it with a clear error until a runtime consumer exists.
 
-## Konvensi pengembangan
+## Development rules
 
-Gunakan C++17, CMake, Qt 6 Widgets, libarchive, dan library modcore tanpa dependensi baru kecuali ada alasan kuat. Pertahankan nama API publik dan compatibility wrapper bila migration belum selesai. Validasi input sebelum mutasi. Untuk file/profile gunakan staging, atomic rename, batas ukuran, dan backup.
+Use C++17, CMake, Qt 6 Widgets, libarchive, and existing modcore dependencies. Preserve public API names and compatibility wrappers. Validate before mutation. Use staging, atomic rename, limits, and backups for profiles/files.
 
-Native patch wajib:
+Every native patch must verify executable/hash, load-image bounds, type/range/capacity/conflicts, and patch a runtime copy. The source disc must remain byte-identical.
 
-1. Memastikan executable/hash target cocok.
-2. Memastikan alamat dan ukuran berada dalam load image.
-3. Memeriksa tipe, rentang, kapasitas, dan konflik.
-4. Menghasilkan patch pada copy/snapshot runtime.
-5. Membiarkan source disc tetap byte-identical.
+For new content, use this order: logical ID/schema; registry allocation; asset/VFS lookup; runtime consumer/hook; save ownership; add/load/save/reload/disable tests; documentation and compatibility version.
 
-## Cara memilih pekerjaan
-
-Mulai dari gap yang paling dekat dengan runtime. Untuk konten baru, urutan minimal adalah:
-
-1. logical ID dan schema;
-2. registry allocation;
-3. asset/VFS lookup;
-4. runtime consumer dan hook;
-5. save ownership/missing-mod behavior;
-6. test add, load, save, reload, disable;
-7. dokumentasi dan compatibility version.
-
-Jangan mulai dari editor besar atau plugin API sebelum satu konten kecil berhasil melewati urutan tersebut.
-
-## Validasi sebelum commit
+## Validation
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -66,31 +44,18 @@ cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ```
 
-Tambahkan `NATURE_TEST_ROM` hanya dengan path lokal yang tidak masuk commit. Untuk perubahan modcore, gunakan build Qt-off. Untuk perubahan launcher, jalankan `launcher_smoke`. Catat test yang tidak dapat dijalankan dan alasannya.
+Use `NATURE_TEST_ROM` only with a local untracked path. Use the Qt-off build for modcore changes and run `launcher_smoke` for launcher changes. Record unavailable tests and reasons.
 
-## Dokumentasi wajib
+## Required documentation
 
-Perbarui dokumen yang relevan ketika mengubah perilaku:
+Update the relevant public docs when behavior changes: `docs/MOD_API.md`, `docs/MEMBUAT_MOD.md`, `docs/MOD_CONTENT.md`, `docs/NATIVE_ITEM_MODS.md`, `docs/NATIVE_PROGRESS.md`, `docs/PORTING.md`, `docs/DECOMP_INTEGRATION.md`, `docs/MOD_MIGRATION.md`, `AGENTS.md`, and this guide.
 
-- format/mod workflow: `docs/MOD_API.md`, `docs/MEMBUAT_MOD.md`, `docs/MOD_CONTENT.md`;
-- native patch: `docs/NATIVE_ITEM_MODS.md`, `docs/NATIVE_PROGRESS.md`;
-- runtime/decomp: `docs/PORTING.md`, `docs/DECOMP_INTEGRATION.md`;
-- migration/storage: `docs/MOD_MIGRATION.md`;
-- arsitektur agent: `AGENTS.md` dan dokumen ini.
+Document test evidence, target ROM/runtime, and limits. Never change “preview” to “playable” without runtime proof.
 
-Dokumentasi harus menyebut bukti test, target ROM/runtime, dan batas yang masih ada. Jangan mengubah kata “preview” menjadi “playable” tanpa bukti runtime.
+## Handoff
 
-## Handoff dan push
+Before push, run `git status --short` and `git diff --check`. Commit only source, tests, docs, examples, licenses, and build configuration. Exclude ROM/ISO/BIN/EXE/DLL/SO, saves, `reference/`, `local-data/`, and build output. Push `main`, verify the remote commit/tree, and report the commit SHA, tests, and limits.
 
-Sebelum push:
+## Next milestone
 
-```sh
-git status --short
-git diff --check
-```
-
-Commit hanya source, tests, docs, examples, licenses, dan konfigurasi build. Tolak ROM/ISO/BIN/EXE/DLL/SO, save, `reference/`, `local-data/`, dan build output. Push ke `main`, lalu verifikasi commit remote dan isi tree melalui GitHub connector. Laporkan hash commit, test, dan batas fitur secara singkat.
-
-## Known next milestones
-
-Milestone berikutnya bukan menambah metadata saja. Target nyata adalah farm slice native: new game, movement, map transition, satu farming action, sleep/day advance, save/reload. Setelah itu sambungkan satu sprite override gameplay, lalu satu entity baru dengan deterministic save ID. Semua milestone harus memiliki completion gate yang bisa direproduksi.
+Prove a native farm slice: new game, movement, map transition, one farming action, sleep/day advance, and save/reload. Then connect one gameplay sprite override and one new entity with deterministic save IDs.
