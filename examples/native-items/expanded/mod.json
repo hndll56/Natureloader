@@ -1,0 +1,14 @@
+{
+  "schema": 2,
+  "id": "expanded",
+  "name": "Expanded: Golden Turnip",
+  "version": "1.0.0",
+  "authors": ["NatureLoader examples"],
+  "description": "Contoh item native untuk model inventory modcore. Bukan bukti gameplay BTN native.",
+  "game": "SLUS_011.15",
+  "api": ">=1.0 <2",
+  "permissions": ["inventory", "player", "ui", "save"],
+  "content": ["content/items.json"],
+  "scripts": ["scripts/items.script.json"],
+  "save_version": 1
+}

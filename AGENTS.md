@@ -23,6 +23,7 @@ Read this file with `README.md`, `docs/PORTING.md`, and `docs/NATIVE_PROGRESS.md
 - `src/rom_catalog.*`: import, hashing, identification, per-ROM profiles.
 - `src/rom_panel.*`, `src/main.cpp`: launcher UI.
 - `modcore/`: resolver, registry, VFS, hooks, scripts, saves, plugins, C API.
+- `modcore/vanilla_ids.*`, `native_items.*`, `native_save.*`: headless native item model (see `docs/NATIVE_ITEM_RUNTIME.md`). Modcore only; not connected to the BTN runtime.
 - `tests/`: unit, integration, boundary, migration, and smoke tests.
 - `examples/`: safe mod authoring and export packages.
 - `docs/`: public contracts, runtime evidence, limits, and milestones.
@@ -63,7 +64,13 @@ For item table integration use `nm_item_fields` and its presence mask: apply onl
 
 Registry validation rejects item inheritance cycles, including cycles introduced by patches; diagnostics identify the field author. `tools/native-patches/runtime-entry-seeds.patch` records additional main EXE function metadata from the decomp. Runtime coverage progress and unresolved stops belong in `docs/NATIVE_PROGRESS.md`.
 
-`tools/prepare_native_capture.py` appends only CRC-verified ranges from a local RAM dump and refuses output overwrites. Its metadata is in `tools/native-patches/coverage_entries.json`. Last observed farm transition gap: `0x800E5A1C` after final New Game confirmation. Its capture compiles, but that transition is not yet verified after the rebuild. New item/NPC acceptance remains unfinished.
+`tools/prepare_native_capture.py` appends only CRC-verified ranges from a local RAM dump and refuses output overwrites. Its metadata is in `tools/native-patches/coverage_entries.json`; audited ranges may specify multiple function entries. The New Game gaps at `0x800E5A1C`, `0x800E2E98` and `0x800E9778` are passed by the local coverage build. Sixteen entries from the 113-slot farm event-handler table were missing from static discovery. Their code range matches the stock overlay. `tools/audit_native_newgame.py` reproduces setup and records a rendered farm with advancing frames and zero interpretation; this does not certify farming, day advance, retail save/load, or new mod entities.
+
+Native item model milestone (modcore only): `expanded:golden_turnip` is registered, acquired, bought, selected, used, saved to `mods/expanded.json`, reloaded, and survives disable/re-enable in `tests/modcore/native_item_tests.cpp`. It runs against `ModelPlayer`, a test double. It does **not** show an item in the native game inventory, use it on the farm, or touch a retail save; those need `reference/btn-recomp` and `local-data/`. Canonical retail ids stay `base:<name>`; `vanilla:` spellings are native-layer aliases only (`modcore/vanilla_ids.h`). Do not add a second registry.
+
+Native save-directory scan failures must fail without clearing live inventory or writing core state. Validate mod IDs before quarantine operations. Windows replacement uses `MoveFileExW`; Windows runtime testing remains required. Save operations are not a transaction across core and per-mod files.
+
+The twelve-capture local build also includes installed OpenBIOS continuation `0x80002814`. Longer probes show mayor dialogue and childhood flashback progression. The scripted opening has not yet returned player control within the 180-second movement probe, so free movement and the full farm slice remain unverified. Keep this failure visible; do not bypass script/input flags to manufacture a movement result.
 
 ## GitHub handoff
 

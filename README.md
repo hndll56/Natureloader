@@ -2,7 +2,7 @@
 
 Desktop launcher and native-port foundation for Harvest Moon: Back to Nature.
 
-**Status: experimental.** The launcher and mod catalog work on Linux. The research native runtime has booted the supported USA executable through title and Memory Card menus. Full farm gameplay, save/reload, Windows, Android, and arbitrary ROM hacks are not verified.
+**Status: experimental.** The launcher and mod catalog work on Linux. The local research runtime reaches a rendered farm after New Game under the native-only guard. Full farming, day advance, save/reload, Windows, Android, and arbitrary ROM hacks are not verified.
 
 ## Goals
 
@@ -39,6 +39,10 @@ zero interpreted instructions, and an unchanged executable. See
 the C ABI's `nm_item_fields` presence mask to preserve inherited fields.
 
 Not yet playable: new items or entities, HD gameplay sprites, new maps, buildings, tools, events, Lua, gameplay plugins, and native save extensions.
+
+The [native item model](docs/NATIVE_ITEM_RUNTIME.md) adds a modcore inventory,
+item use/purchase through `PlayerPort`, and per-mod save files. Its tests use
+`ModelPlayer`; it is not yet connected to the game's inventory or player.
 
 ## Build on Linux
 

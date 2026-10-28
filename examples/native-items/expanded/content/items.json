@@ -1,0 +1,17 @@
+{
+  "item": {
+    "golden_turnip": {
+      "name": {"en": "Golden Turnip", "id": "Lobak Emas"},
+      "description": {"en": "A shiny turnip. Restores stamina and eases fatigue.", "id": "Lobak berkilau. Memulihkan stamina dan mengurangi lelah."},
+      "category": "consumable",
+      "buy_price": 300,
+      "sell_price": 150,
+      "stamina": 40,
+      "fatigue": -15,
+      "sprite": "expanded:sprites/golden-turnip.png",
+      "flags": ["pickup"],
+      "shippable": true,
+      "hooks": {"use": "expanded:eat-golden-turnip"}
+    }
+  }
+}

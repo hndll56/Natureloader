@@ -68,8 +68,8 @@ Confirming that setup exposed a farm-overlay coverage gap at `0x800E5A1C`,
 return address `0x800E417C`, with zero interpreted instructions. Its 192-byte
 routine has no branch targets outside the captured range. The local capture
 (CRC32 `BCA41963`) compiled successfully and the eight-capture runtime rebuilt.
-Boot/menu were rechecked, but passing that farm transition after this last
-capture remains unverified. Do not describe it as fixed gameplay coverage.
+At that checkpoint only boot/menu were rechecked. The 2026-10-28 follow-up below
+verifies passing this stop and reaching the rendered farm.
 
 `tools/prepare_native_capture.py` reproduces capture-list preparation from
 player-owned live RAM, verifies the recorded CRC/range, and preserves the input
@@ -192,3 +192,121 @@ Disabling the example mod and exporting a fresh snapshot restored the original
 Memory Card prompt in a second native run (`build/native-ui-restored.png`).
 The integration suite verifies the base executable and original ROM hashes
 remain unchanged after native text export and mod toggling.
+
+## Native item model milestone, modcore only (2026-10-28)
+
+**This is not native runtime evidence.** Claude's web sandbox had no `reference/btn-recomp`, no `local-data/`, no Qt, no
+ROM/BIOS and no git checkout, so no BTN runtime, boot, farm, screenshot, RAM audit or retail save was exercised.
+
+Implemented and tested in `modcore` only (`docs/NATIVE_ITEM_RUNTIME.md`): `ItemHandle`, vanilla id aliases,
+`expanded:golden_turnip`, a headless inventory with acquire/select/use/buy, `mods/expanded.json` save with orphan
+preservation, atomic writes and backups.
+
+Results reported by that sandbox (`-DNATURE_BUILD_LAUNCHER=OFF`, GCC 13.3, CMake/Ninja, build dirs outside the tree):
+
+| Run | Result |
+| --- | --- |
+| Baseline before changes (direct g++): modcore, boundary, base_patch, item_fields, script_boundary, fake_core | all pass |
+| `ctest` Debug, 11 tests: `modcore`, `modcore_plugin_lifetime`, `modcore_boundaries`, `modcore_base_patches`, `modcore_item_fields`, `modcore_script_boundaries`, `modcore_native_items`, `modcore_native_items_example_load`, `modcore_end_to_end`, `modcore_examples_load`, `modcore_cli_errors` | 11/11 passed |
+| `ctest` with `-fsanitize=address,undefined -fno-sanitize-recover=undefined`, `ASAN_OPTIONS=detect_leaks=1` | 11/11 passed, no reports |
+| `modcore_native_items`: 16 test groups | 0 failed checks (also under sanitizers) |
+| Mutation checks of the new runtime (orphan slot reservation, unchanged-file skip, vanilla refusal, consume, preserved entries, affordability order) | each mutant failed at least one check |
+
+Not run: Qt launcher tests (`core`, `modcore_library`, `mod_migration`, `rom_catalog`, `texture_decoder`,
+`launcher_smoke`), `rom_integration`, and any `tools/*.py` audit.
+
+Acceptance checklist status (first milestone):
+
+- [x] Native item registry with stable handle: reuses `Registry`/`IdTable`; wrapped by `ItemHandle` (modcore).
+- [x] Manifest registers `expanded:golden_turnip` (modcore).
+- [x] Select, use, effect, buy, save, reload, disable, re-enable (modcore model, `ModelPlayer`).
+- [ ] Item appears in the **native game** inventory: not done.
+- [ ] Effect visible **in the game**, farm bootstrap, real save/load, native integration test: not done.
+- [ ] Existing CTest incl. Qt targets: only the launcher-less subset ran.
+
+## Local follow-up and farm coverage (2026-10-28)
+
+The supplied `native-item-model.patch` applied after a clean patch check. Local
+verification of the original patch passed 11/11 modcore tests, 11/11 ASan/UBSan
+tests (`ASAN_OPTIONS=detect_leaks=0`), and 18/18 full tests, including Qt smoke
+and player-owned ROM integration. No mutation-testing result was reproduced.
+
+Local fixes add a seventeenth item-model test group: a broken save directory
+must preserve live inventory, selection and the core save. Directory scan errors
+now propagate; quarantine rejects invalid mod IDs. Windows target replacement
+uses `MoveFileExW`, whose Windows execution is still unverified. Saves remain
+non-transactional across files; save-version migration is still absent.
+
+A state-aware New Game replay passed `0x800E5A1C` and exposed an indirect callback
+at `0x800E2E98` (8 bytes, CRC32 `E38BCEA5`, return `0x800E28A0`). Its native capture
+passed that stop and exposed `0x800E9778` (192 bytes, CRC32 `752E2871`, return
+`0x800E417C`). The latter caller indexes the 113-entry event-command pointer
+table at `0x800B975C`. Sixteen table entries were absent from the farm's compiled
+dispatch. Metadata records those roots and a 37,812-byte code range beginning
+`0x800E5704`, CRC32 `B7212388`. The range matched the stock extracted farm overlay
+byte-for-byte. Its boundaries end at another known table function entry.
+
+The local eleven-capture build generated 255 exact dispatch identities. A replay
+with `tools/audit_native_newgame.py` passed character setup, entered scene 2,
+rendered the farm/player/house, and advanced frames 4111 to 4929 over a 15-second
+observation with zero interpreted instructions. Evidence is local at
+`build/newgame-audit-20261028-handlers/`, including `result.json`, screenshots,
+logs and private saves. The source executable hash remained unchanged.
+
+Repeat using a fresh evidence directory:
+
+```sh
+python3 tools/audit_native_newgame.py \
+  --runtime reference/btn-recomp/build/Harvest_Moon__Back_to_Nature__Recompiled_ \
+  --config reference/btn-recomp/game.toml \
+  --disc /absolute/path/to/disc.cue \
+  --exe local-data/base/SLUS_011.15 \
+  --evidence-dir build/newgame-audit-new
+```
+
+The probe guards the executable hash and uses private saves/empty mods. It reads
+actual state to distinguish title intro, title menu, name input, birthday and
+final confirmation. Final confirmation may use menu phase 7; its title state is
+the authoritative gate. Add `--movement` to
+require live player position to change after a Right input. Success is explicitly
+coverage evidence, not a full farming/save certification.
+
+The live retail item audit also passed stock/modded/restored runs on this build:
+frames 637/642/633, zero interpreted instructions, correct five field values,
+unchanged source executable. New mod inventory, item rendering/use, `PlayerPort`
+integration, shop call sites, and real gameplay save/reload remain unimplemented.
+
+Player layout research: a MIPS32 record-layout check of the reference headers
+places `FarmState.player` at offset `0x51C8` from `game_state` (`0x8006C838`).
+Stamina/max stamina/fatigue are signed 16-bit at player offsets `0x12/0x14/0x16`;
+gold is signed 32-bit at `0x5C`. Calendar day is signed 16-bit at `0x80070CF4`,
+zero-based 0..29. A real New Game RAM capture read 100/100/0 stamina/max/fatigue,
+500 gold, year/season/day 0/0/1. The newer decomp documents stamina bounded by
+max stamina (0..255), fatigue 0..100, gold 0..9,999,999. This is layout evidence,
+not a working `PlayerPort` or permission to write arbitrary guest RAM.
+
+Final regression on the twelve-capture build passed retail stock/mod/restored
+RAM checks at frames 631/626/623. The final state-aware New Game probe
+(`build/newgame-audit-20261028-final/result.json`) passed a 30-second observation
+from frames 3719 to 5017 with zero interpreted instructions and an unchanged
+source executable. Its `farm_gameplay_verified` remains false by design.
+
+A longer replay subsequently reached an uncompiled installed OpenBIOS RAM
+continuation at physical `0x00002814`, return `0x000027EC`. Its KSEG0 alias
+`0x80002814` now has an audited 348-byte capture, CRC32 `316E400F`. The resulting
+twelve-capture build contains 265 exact dispatch identities. It passed setup,
+30 seconds of farm observation, and actual mayor dialogue/childhood flashback
+progression without another observed coverage stop. The initial movement check
+was made during this scripted opening (`player.stateFlags = 0x04800000`, including
+`PLAYER_FLAG_SCRIPTED`); it does not prove a movement defect. The extended
+`--movement` probe advances dialogue but timed out after 180 seconds waiting for
+the opening event to release control. Evidence:
+`build/newgame-audit-20261028-kernel/` and `build/newgame-audit-20261028-intro/`.
+Free movement, the end of the opening, farming, day advance and retail save/load
+are therefore still unverified. Do not mark the complete hybrid item milestone
+done. Short observation success must not be reported as a completed gameplay test.
+
+The shipped `hello-text` example now uses `Ya\nTidak`: eight supported glyphs.
+The previous longer prompt exceeded retail capacity; the intermediate slash
+spelling also used an unsupported glyph. Launcher regression tests install the
+actual example and require native preflight success.

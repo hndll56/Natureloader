@@ -1,0 +1,8 @@
+{
+  "handlers": {
+    "eat-golden-turnip": [
+      {"do": "set_flag", "flag": "golden-turnips-eaten", "value": {"op": "+", "a": {"flag": "golden-turnips-eaten"}, "b": 1}},
+      {"do": "show_text", "text": {"en": "Golden Turnip: so refreshing!", "id": "Lobak Emas: segar sekali!"}}
+    ]
+  }
+}

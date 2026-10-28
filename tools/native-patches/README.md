@@ -53,3 +53,16 @@ It requires exactly 2 MiB of RAM, checks range alignment and CRC, preserves
 existing captures, and refuses to overwrite the output file. Compile the new
 capture list through the research runtime's `compile_overlays.py --static`
 workflow. The generated JSON contains game code and must stay local.
+
+The 2026-10-28 follow-up passed that transition and found missing farm callbacks
+at `0x800E2E98` and `0x800E9778`. The 113-entry pointer table at `0x800B975C`
+identifies sixteen missing event handlers. `coverage_entries.json` records a
+37,812-byte range at `0x800E5704` and its audited `function_entries`; this range
+matched the original extracted overlay. The capture tool validates every root
+and refuses to silently reuse a capture missing roots. Compile that capture
+through the same workflow. The local build currently uses
+`build/native-boot-kernel-20261028.json` (twelve captures), not the older
+eight-capture list. This also includes installed OpenBIOS continuation
+`0x80002814` (physical `0x00002814`, 348 bytes, CRC32 `316E400F`).
+Rendered farm/zero-interpreter evidence is in
+`docs/NATIVE_PROGRESS.md`; a complete reproducible runtime bootstrap remains pending.

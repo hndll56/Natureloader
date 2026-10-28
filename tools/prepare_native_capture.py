@@ -20,6 +20,10 @@ def append_capture(ram, captures, entry):
         raise ValueError("Invalid aligned capture range")
     if not 0x80000000 <= address < 0x80200000 or address + size > 0x80200000:
         raise ValueError("Capture lies outside guest RAM")
+    roots = [int(value, 0) for value in entry.get("function_entries", [entry["address"]])]
+    if not roots or len(roots) != len(set(roots)) or any(
+            root % 4 or not address <= root < address + size for root in roots):
+        raise ValueError("Function entries must be unique aligned addresses inside the capture")
     offset = address - 0x80000000
     data = ram[offset:offset + size]
     if zlib.crc32(data) != int(entry["crc32"], 16):
@@ -28,13 +32,15 @@ def append_capture(ram, captures, entry):
     for old in captures:
         if (int(old["load_addr"], 0) == address and old["size"] == size
                 and old["bytes_b64"] == encoded):
+            if not set(roots).issubset(set(old.get("function_entry_pcs", []))):
+                raise ValueError("Existing capture omits audited function entries; preserve it and rebuild explicitly")
             return list(captures)
     return [*captures, {
         "schema": "psxrecomp overlay capture v2", "load_addr": hex(address),
         "size": size, "bytes_b64": encoded,
         "producer": "NatureLoader verified local RAM capture", "producer_name": entry["name"],
-        "dispatch_entry_pcs": [address], "static_dispatch_entry_pcs": [address],
-        "function_entry_pcs": [address],
+        "dispatch_entry_pcs": roots, "static_dispatch_entry_pcs": roots,
+        "function_entry_pcs": roots,
     }]
 
 

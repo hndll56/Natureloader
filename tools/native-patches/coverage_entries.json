@@ -3,6 +3,20 @@
   "exe_sha256": "34e3b35dcd3fb1cd9a7d4813b8a9ef987915826e3d436f1908ecbe2d4fdf1444",
   "entries": [
     {"address": "0x800BC3AC", "size": 52, "crc32": "DEE1DCFC", "name": "Title overlay missing entry", "observed_return": "0x800BBC64"},
-    {"address": "0x800E5A1C", "size": 192, "crc32": "BCA41963", "name": "Farm overlay missing entry after New Game", "observed_return": "0x800E417C"}
+    {"address": "0x800E5A1C", "size": 192, "crc32": "BCA41963", "name": "Farm overlay missing entry after New Game", "observed_return": "0x800E417C"},
+    {"address": "0x800E2E98", "size": 8, "crc32": "E38BCEA5", "name": "Farm indirect callback missing entry", "observed_return": "0x800E28A0"},
+    {"address": "0x800E9778", "size": 192, "crc32": "752E2871", "name": "Farm event command missing entry", "observed_return": "0x800E417C"},
+    {
+      "address": "0x800E5704", "size": 37812, "crc32": "B7212388",
+      "name": "Farm event handlers missing from static discovery",
+      "pointer_table": "0x800B975C", "pointer_count": 113,
+      "function_entries": [
+        "0x800E5A1C", "0x800E6914", "0x800E74AC", "0x800E7954",
+        "0x800E89CC", "0x800E8BA0", "0x800E8BF0", "0x800E8D00",
+        "0x800E953C", "0x800E9778", "0x800E9838", "0x800EB79C",
+        "0x800EC490", "0x800ED760", "0x800EDEB8", "0x800EE000"
+      ]
+    },
+    {"address": "0x80002814", "size": 348, "crc32": "316E400F", "name": "OpenBIOS installed RAM continuation", "observed_pc": "0x00002814", "observed_return": "0x000027EC"}
   ]
 }

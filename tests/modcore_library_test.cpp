@@ -88,6 +88,14 @@ void nativePlanChecks(const QString &temporaryRoot) {
         zip(package, files);
         library.installZip(package);
     };
+    const auto hello = QJsonDocument::fromJson(nature::readFile(
+        QFileInfo(QString::fromUtf8(__FILE__)).dir().filePath("../examples/hello-text/mod.json"))).object();
+    install(hello);
+    library.setEnabled("hello-text", true);
+    check(library.nativePlan().value("texts").toObject().value("messages.promptYesNo") == "Ya\nTidak",
+          "Shipped hello-text example fits native capacity and supported glyphs");
+    library.setEnabled("hello-text", false);
+    library.removeMod("hello-text");
     auto mixed = patchMod("balance", "base:turnip", {{"buy_price", 300}, {"sell_price", 120}, {"stamina", 5}, {"fatigue", -2}});
     mixed.insert("texts", QJsonObject{{"messages.selectAMemoryCardSlot", "Balance"}});
     install(mixed);

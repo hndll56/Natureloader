@@ -10,7 +10,8 @@ include(GNUInstallDirs)
 add_library(nature_modcore STATIC
   modcore/json.cpp modcore/util.cpp modcore/version.cpp modcore/manifest.cpp
   modcore/resolver.cpp modcore/registry.cpp modcore/vfs.cpp modcore/hooks.cpp
-  modcore/save.cpp modcore/plugin.cpp modcore/session.cpp modcore/capi.cpp)
+  modcore/save.cpp modcore/plugin.cpp modcore/session.cpp modcore/capi.cpp
+  modcore/vanilla_ids.cpp modcore/native_save.cpp modcore/native_items.cpp)
 target_include_directories(nature_modcore PUBLIC modcore)
 target_link_libraries(nature_modcore PUBLIC ${CMAKE_DL_LIBS})
 if(WIN32)
@@ -52,6 +53,11 @@ if(BUILD_TESTING)
   add_executable(modcore_script_boundary_tests tests/modcore/script_boundary_tests.cpp)
   target_link_libraries(modcore_script_boundary_tests PRIVATE nature_modcore)
   add_test(NAME modcore_script_boundaries COMMAND modcore_script_boundary_tests)
+  add_executable(modcore_native_item_tests tests/modcore/native_item_tests.cpp)
+  target_include_directories(modcore_native_item_tests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+  target_link_libraries(modcore_native_item_tests PRIVATE nature_modcore)
+  add_test(NAME modcore_native_items COMMAND modcore_native_item_tests examples/native-items)
+  add_test(NAME modcore_native_items_example_load COMMAND naturemod check examples/native-items)
   add_executable(fake_core tests/modcore/fake_core.cpp)
   target_link_libraries(fake_core PRIVATE nature_modcore)
   add_test(NAME modcore_end_to_end COMMAND fake_core examples/v2)
@@ -60,7 +66,7 @@ if(BUILD_TESTING)
     "-DNATUREMOD=$<TARGET_FILE:naturemod>"
     "-DEXAMPLES=${CMAKE_CURRENT_SOURCE_DIR}/examples/v2"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/modcore/cli_errors.cmake")
-  set_tests_properties(modcore modcore_end_to_end modcore_examples_load
+  set_tests_properties(modcore modcore_end_to_end modcore_examples_load modcore_native_items modcore_native_items_example_load
     PROPERTIES WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 option(NATURE_BUILD_LAUNCHER "Build the Qt desktop launcher" ON)

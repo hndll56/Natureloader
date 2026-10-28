@@ -7,6 +7,7 @@ All public project documentation is being maintained in English. Use these docum
 - [Making mods](MEMBUAT_MOD.md): practical mod authoring workflow.
 - [Content registry](MOD_CONTENT.md): item, NPC, map, building, tool, asset, hook, and script authoring.
 - [Native item patches](NATIVE_ITEM_MODS.md): supported retail item fields and limits.
+- [Native item model](NATIVE_ITEM_RUNTIME.md): modcore-only native item slice, id aliases, save layout, limits.
 - [Migration](MOD_MIGRATION.md): migration, backups, and rollback limits.
 - [Architecture](ARCHITECTURE_V2.md): unified modcore architecture.
 - [Porting](PORTING.md): native runtime status and milestones.

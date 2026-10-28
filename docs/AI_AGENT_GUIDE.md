@@ -62,10 +62,29 @@ The live item audit is reproducible with `tools/audit_native_items.py`; see `NAT
 
 Inheritance cycles are rejected before handle allocation. Native entry seed additions are recorded as an address-only patch under `tools/native-patches/`; generated game C and RAM captures remain local.
 
-The New Game wizard has been driven through final setup confirmation. The next
-observed gap is farm-overlay entry `0x800E5A1C`; its local capture compiled, but
-the farm transition still needs verification. Use `tools/prepare_native_capture.py`
-to prepare only audited ranges. New item/NPC gameplay, actual game save/reload,
-inventory table allocation, and spawning remain required acceptance gates.
+The New Game wizard now reaches a rendered farm after adding CRC-verified
+callback/event-handler coverage. Use `tools/prepare_native_capture.py` only with
+audited ranges and `tools/audit_native_newgame.py` for a state-aware replay.
+Movement, actual game save/reload, new item/NPC gameplay, inventory integration,
+and spawning remain acceptance gates; rendered frames alone do not satisfy them.
 
 Prove a native farm slice: new game, movement, map transition, one farming action, sleep/day advance, and save/reload. Then connect one gameplay sprite override and one new entity with deterministic save IDs.
+
+## Native item model (modcore, not runtime)
+
+`modcore/native_items.*`, `native_save.*` and `vanilla_ids.*` add a headless item model (handle, inventory, use/buy,
+`mods/<mod>.json` save, orphan preservation) on top of the existing registry. It is proven only against a test double
+in `tests/modcore/native_item_tests.cpp`. Details and limits: `docs/NATIVE_ITEM_RUNTIME.md`. The next step needs the
+local runtime: bridge `PlayerPort` and the item tables to BTN, then prove an on-screen item on the farm.
+
+Local integration now passes the complete Qt/ROM suite (18/18) and modcore
+ASan/UBSan suite (11/11, leak detection disabled). The item model has an
+additional save-directory failure regression; a failed scan must preserve live
+inventory, selection, and the existing core save. Windows file replacement was
+adapted but has not been exercised on Windows.
+
+`tools/audit_native_newgame.py` drives title/setup by verified state transitions,
+records screenshots/logs under a new evidence directory, and fails on native
+coverage stops. The local build now reaches a rendered farm with zero interpreted
+instructions. This still does not prove the native item model works in the game.
+See `NATIVE_PROGRESS.md` for the capture roots and the remaining acceptance gates.

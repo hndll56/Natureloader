@@ -92,7 +92,18 @@ hilang tetap tersimpan; saat mod dipasang lagi, nomor dan flag pulih (diuji di `
   umur plugin, dan kegagalan CLI. Tes `modcore_library` memeriksa alur ZIP/profil launcher.
 - `naturemod check examples/v2` memuat empat mod contoh.
 
+## Model item native (irisan modcore)
+
+Dokumen lengkap: `NATIVE_ITEM_RUNTIME.md`. Ringkasnya: `native_items.*` menambah `ItemHandle` opak, inventory
+tanpa renderer, `use`/`buy` lewat hook `item.use`/`item.buy`, dan `NativeSaveStore` (`natureloader.json` +
+`mods/<mod>.json`) di atas `Session`, `Registry`, `IdTable`, dan `SaveExtension` yang sudah ada. Tidak ada
+registry kedua. ID retail kanonik tetap `base:<nama>`; ejaan `vanilla:item.turnip` hanyalah alias di lapisan native
+(`vanilla_ids.h`) yang diubah ke ID kanonik sebelum lookup dan tidak pernah disimpan. Data mod yang tidak aktif
+tidak pernah ditulis ulang dan tetap menempati slot (`reservedSlots`). Semua ini hanya terbukti di `modcore`
+terhadap `ModelPlayer` tiruan, **bukan** di runtime native BTN.
+
 ## Batas yang jujur
+
 
 - Core game belum menjalankan modloader ini. `fake_core` membuktikan kontrak, bukan gameplay BTN.
 - Rentang handle area/NPC/event/building/shop/recipe masih **perkiraan** (lihat `base_catalog.json`);
@@ -110,3 +121,6 @@ hilang tetap tersimpan; saat mod dipasang lagi, nomor dan flag pulih (diuji di `
 - ABI dan format schema 2 masih eksperimental. Plugin native menjalankan kode host penuh;
   persetujuan hash bukan sandbox. CLI tidak memberikan persetujuan plugin otomatis.
 - Validasi PNG memeriksa header/dimensi, bukan decode penuh atau kesiapan sprite untuk renderer BTN.
+- Model item native (`native_items.*`) belum terhubung ke runtime BTN: tidak ada inventory di layar, farm,
+  jembatan ke save retail, integrasi toko, migrasi `save_version`, maupun entry C ABI. Item retail ditolak inventory
+  (`VanillaNotBridged`). Mod bernama `vanilla` membuat alias ambigu sehingga alias dinonaktifkan.
